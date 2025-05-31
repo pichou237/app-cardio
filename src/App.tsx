@@ -13,6 +13,10 @@ import PredictionPage from "./pages/PredictionPage";
 import ResultsPage from "./pages/ResultsPage";
 import ProfilePage from "./pages/ProfilePage";
 import AdminPage from "./pages/AdminPage";
+import AboutPage from "./pages/AboutPage";
+import TestimonialsPage from "./pages/TestimonialsPage";
+import HowItWorksPage from "./pages/HowItWorksPage";
+import ContactPage from "./pages/ContactPage";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import ChatBot from "./features/chatbot/components/ChatBot";
 
@@ -26,6 +30,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/testimonials" element={<TestimonialsPage />} />
+          <Route path="/how-it-works" element={<HowItWorksPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route 
