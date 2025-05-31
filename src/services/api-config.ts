@@ -1,7 +1,7 @@
 // Configuration de l'API pour CardioPredict
 
 // URL de base de l'API
-export const API_BASE_URL = "http://localhost:8081"; // À remplacer par l'URL réelle en production
+export const API_BASE_URL = "http://localhost:5001"; // À remplacer par l'URL réelle en production
 
 // Endpoints de l'API
 export const API_ENDPOINTS = {
