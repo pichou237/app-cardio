@@ -8,12 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthService } from "@/services/auth-service";
 
 const registerSchema = z.object({
-  name: z.string().min(2, { message: "Le nom doit contenir au moins 2 caractères." }),
-  email: z.string().email({ message: "Veuillez saisir un email valide." }),
+  username: z.string().min(2, { message: "Le nom d'utilisateur doit contenir au moins 2 caractères." }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères." }),
+  email: z.string().email({ message: "Entrer un email valide." }),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Les mots de passe ne correspondent pas.",
@@ -24,13 +25,15 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 const RegisterForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
+  const navigate = useNavigate();
   
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
-      email: "",
+      username: "",
       password: "",
+      email: "",
       confirmPassword: "",
     },
   });
@@ -38,18 +41,54 @@ const RegisterForm: React.FC = () => {
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
-      // Ici, vous connecterez à votre API d'inscription
-      console.log("Tentative d'inscription avec:", data);
+      const { username, password , email } = data;
+      console.log("data:",data)
+      try {
+        await AuthService.register({ username, password ,email});
+      } catch (apiError) {
+        console.error("API Error:", apiError);
+        // Activate offline mode if API is unreachable
+        setIsOfflineMode(true);
+        toast.warning("Mode hors ligne activé: API inaccessible");
+        // Early return to show the offline mode message
+        setIsLoading(false);
+        return;
+      }
       
-      // Simulation d'un délai d'API
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success("Inscription réussie! Vous êtes maintenant connecté.");
       
-      toast.success("Inscription réussie! Vous pouvez maintenant vous connecter.");
+      // Enregistrer les informations d'authentification
+      localStorage.setItem("userRole", "user");
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("username", username);
+      localStorage.setItem("email", eamil);
+      
       // Redirection après inscription
-      window.location.href = "/login";
+      navigate("/dashboard");
     } catch (error) {
       console.error("Erreur d'inscription:", error);
-      toast.error("Échec de l'inscription. Veuillez réessayer.");
+      toast.error(error instanceof Error ? error.message : "Échec de l'inscription. Veuillez réessayer.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleOfflineRegister = () => {
+    setIsLoading(true);
+    try {
+      const username = form.getValues("username") || "utilisateur.test";
+      
+      // Set offline user
+      localStorage.setItem("userRole", "user");
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("username", username);
+      localStorage.setItem("isOfflineMode", "true");
+      
+      toast.success("Inscription en mode hors ligne réussie!");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Erreur d'inscription offline:", error);
+      toast.error("Erreur lors de l'inscription en mode hors ligne");
     } finally {
       setIsLoading(false);
     }
@@ -68,18 +107,18 @@ const RegisterForm: React.FC = () => {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
-            name="name"
+            name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nom complet</FormLabel>
+                <FormLabel>Nom d'utilisateur</FormLabel>
                 <FormControl>
-                  <Input placeholder="John Doe" {...field} />
+                  <Input placeholder="monnomdutilisateur" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="email"
@@ -87,7 +126,7 @@ const RegisterForm: React.FC = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="exemple@email.com" {...field} />
+                  <Input placeholder="email@gmail.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -127,6 +166,21 @@ const RegisterForm: React.FC = () => {
           </Button>
         </form>
       </Form>
+      
+      {isOfflineMode && (
+        <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mt-4">
+          <h3 className="font-medium text-amber-800">Problème de connexion au serveur</h3>
+          <p className="text-sm text-amber-700 mt-1">Le serveur semble indisponible. Vous pouvez créer un compte en mode hors ligne avec un accès limité.</p>
+          <Button 
+            variant="outline" 
+            className="w-full mt-2 border-amber-500 text-amber-700 hover:bg-amber-100"
+            onClick={handleOfflineRegister}
+            disabled={isLoading}
+          >
+            {isLoading ? "Inscription en cours..." : "Créer un compte hors ligne"}
+          </Button>
+        </div>
+      )}
       
       <div className="text-center text-sm">
         <p>

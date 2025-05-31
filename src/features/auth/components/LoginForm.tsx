@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -9,53 +10,130 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useState } from "react";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthService, AuthCredentials } from "@/services/auth-service";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Veuillez saisir un email valide." }),
+  username: z.string().min(1, { message: "Le nom d'utilisateur est requis." }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères." }),
+  email: z.string().default(""),
+  role: z.string().default("")
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
+const DEFAULT_CREDENTIALS = [
+  { username: "admin@admin.com", password: "admin123", role: "admin" },
+  { username: "utilisateur.test@offline.com", password: "test123", role: "user" },
+];
+
 const LoginForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const navigate = useNavigate();
   
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
+    setLoginError(null);
+    
     try {
-      // Simulated authentication
-      console.log("Tentative de connexion avec:", data);
+      // Cast to AuthCredentials to ensure type safety
+      const credentials: AuthCredentials = {
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        role: data.role
+      };
       
-      // Simulation d'un délai d'API
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      try {
+        // We know the login method returns a string (the API key)
+        const apiKey = await AuthService.login(credentials);
+        
+        if (apiKey) {
+          // Authentification réussie via l'API
+          localStorage.setItem("userRole", "user"); // Par défaut utilisateur normal
+          localStorage.setItem("isAuthenticated", "true");
+          localStorage.setItem("userEmail", data.email);
+          localStorage.setItem("isOfflineMode", "false");
+          console.log("user:",data);
+          toast.success("Connexion réussie!");
+          if(data.role == 'admin'){
+            navigate('/admin')
+          }else{
+            navigate("/dashboard");
+          }
+          return;
+        }
+      } catch (apiError: any) {
+        console.error("API Error:", apiError);
+        
+        // Si l'erreur indique que l'utilisateur n'existe pas
+        if (apiError.message && apiError.message.includes("utilisateur non trouvé")) {
+          setLoginError("Utilisateur non trouvé. Veuillez vérifier vos identifiants ou créer un compte.");
+          setIsLoading(false);
+          return;
+        }
+        
+        // Sinon, activer le mode hors ligne
+        setIsOfflineMode(true);
+        toast.warning("Mode hors ligne activé: API inaccessible");
+      }
       
-      // Admin authentication check
-      if (data.email === "admin@admin.com" && data.password === "admin123") {
-        // Store admin status in localStorage for persistence
-        localStorage.setItem("userRole", "admin");
+      // Vérifier les identifiants par défaut (pour démo et mode hors ligne)
+      const matchedUser = DEFAULT_CREDENTIALS.find(
+        user => user.username === data.username && user.password === data.password
+      );
+      
+      if (matchedUser) {
+        // Stocker les infos utilisateur dans localStorage
+        localStorage.setItem("userRole", matchedUser.role);
         localStorage.setItem("isAuthenticated", "true");
-        toast.success("Connexion administrateur réussie!");
-        navigate("/admin");
+        localStorage.setItem("userEmail", matchedUser.username);
+        localStorage.setItem("isOfflineMode", isOfflineMode ? "true" : "false");
+        
+        if (matchedUser.role === "admin") {
+          toast.success("Connexion administrateur réussie!");
+          navigate("/admin");
+        } else {
+          toast.success("Connexion réussie!");
+          navigate("/dashboard");
+        }
       } else {
-        // Regular user authentication
-        localStorage.setItem("userRole", "user");
-        localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("userEmail", data.email);
-        toast.success("Connexion réussie!");
-        navigate("/dashboard");
+        // Aucune correspondance avec les identifiants par défaut
+        setLoginError("Identifiants incorrects. Veuillez réessayer.");
       }
     } catch (error) {
       console.error("Erreur de connexion:", error);
-      toast.error("Échec de la connexion. Veuillez réessayer.");
+      setLoginError(error instanceof Error ? error.message : "Échec de la connexion. Veuillez réessayer.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOfflineLogin = () => {
+    setIsLoading(true);
+    try {
+      // Définir l'utilisateur hors ligne
+      localStorage.setItem("userRole", "user");
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("userEmail", "utilisateur.test@offline.com");
+      localStorage.setItem("isOfflineMode", "true");
+      
+      toast.success("Connexion en mode hors ligne réussie!");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Erreur de connexion offline:", error);
+      toast.error("Erreur lors de la connexion en mode hors ligne");
     } finally {
       setIsLoading(false);
     }
@@ -70,16 +148,24 @@ const LoginForm: React.FC = () => {
         </p>
       </div>
       
+      {loginError && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Erreur de connexion</AlertTitle>
+          <AlertDescription>{loginError}</AlertDescription>
+        </Alert>
+      )}
+      
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
-            name="email"
+            name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Nom d'utilisateur</FormLabel>
                 <FormControl>
-                  <Input placeholder="exemple@email.com" {...field} />
+                  <Input placeholder="votrenomdutilisateur" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -105,6 +191,21 @@ const LoginForm: React.FC = () => {
           </Button>
         </form>
       </Form>
+      
+      {isOfflineMode && (
+        <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mt-4">
+          <h3 className="font-medium text-amber-800">Problème de connexion au serveur</h3>
+          <p className="text-sm text-amber-700 mt-1">Le serveur semble indisponible. Vous pouvez continuer en mode hors ligne avec un accès limité.</p>
+          <Button 
+            variant="outline" 
+            className="w-full mt-2 border-amber-500 text-amber-700 hover:bg-amber-100"
+            onClick={handleOfflineLogin}
+            disabled={isLoading}
+          >
+            {isLoading ? "Connexion en cours..." : "Continuer en mode hors ligne"}
+          </Button>
+        </div>
+      )}
       
       <div className="text-center text-sm">
         <p>

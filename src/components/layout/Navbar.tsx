@@ -88,7 +88,25 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated: propIsAuthenticated = 
                   {item.name}
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
                 </Link>
+
+              ) : (
+                // User navigation - removed dashboard link
+                <>
+                  <Link to="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-primary">
+                    Tableau de bord 
+                  </Link>
+                  <Link to="/prediction" className="text-sm font-medium text-muted-foreground hover:text-primary">
+                    Nouvelle prédiction
+                  </Link>
+                  <Link to="/profile" className="text-sm font-medium text-muted-foreground hover:text-primary">
+                    Mon profil
+                  </Link>
+                </>
+              )
+            )}
+
               ))}
+
           </nav>
           
           {/* Desktop Auth Buttons */}

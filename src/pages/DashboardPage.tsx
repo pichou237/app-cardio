@@ -1,14 +1,17 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import StatisticsDashboard from "@/features/statistics/components/StatisticsDashboard";
+import HistoryStats from "@/features/prediction/components/HistoryStats";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 
 const DashboardPage: React.FC = () => {
-  // Simulation de connexion admin
-  const isAdmin = true; // En production, cela serait déterminé par le rôle de l'utilisateur
+  const { role, isAuthenticated, isOfflineMode } = useCurrentUser();
+  const isAdmin = role === "admin";
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -18,9 +21,14 @@ const DashboardPage: React.FC = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-bold">Tableau de bord</h1>
             <p className="text-muted-foreground">Bienvenue sur votre tableau de bord CardioPredict</p>
+            {isOfflineMode && (
+              <div className="mt-2 p-2 bg-amber-50 border border-amber-300 rounded-md text-amber-800 text-sm">
+                Mode hors ligne activé. Fonctionnalités limitées disponibles.
+              </div>
+            )}
           </div>
           
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-8">
             <Card>
               <CardHeader>
                 <CardTitle>Nouvelle analyse</CardTitle>
@@ -42,11 +50,11 @@ const DashboardPage: React.FC = () => {
                 <CardDescription>Consultez vos analyses précédentes</CardDescription>
               </CardHeader>
               <CardContent>
-                <p>Vous n'avez pas encore d'analyses enregistrées.</p>
+                <p>Visualisez et comparez vos analyses précédentes pour suivre votre état de santé.</p>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full" disabled>
-                  Voir l'historique
+                <Button variant="outline" className="w-full" asChild>
+                  <Link to="/results">Voir l'historique</Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -65,25 +73,34 @@ const DashboardPage: React.FC = () => {
                 </Button>
               </CardFooter>
             </Card>
-            
-            {/* Carte Admin uniquement visible pour les administrateurs */}
-            {isAdmin && (
-              <Card className="lg:col-span-3 bg-primary/10 border-primary/20">
-                <CardHeader>
-                  <CardTitle>Administration</CardTitle>
-                  <CardDescription>Accédez au tableau de bord administrateur</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p>En tant qu'administrateur, vous pouvez accéder aux statistiques et à la gestion des utilisateurs.</p>
-                </CardContent>
-                <CardFooter>
-                  <Button variant="outline" className="w-full" asChild>
-                    <Link to="/admin">Tableau de bord administrateur</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            )}
           </div>
+          
+          {/* Statistiques section - Uniquement les stats globales pour l'admin */}
+          {!isOfflineMode && isAdmin && <StatisticsDashboard />}
+          
+          {/* Historique et statistiques personnelles - Pour tous les utilisateurs */}
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold mb-4">Vos statistiques personnelles</h2>
+            <HistoryStats />
+          </div>
+          
+          {/* Carte Admin uniquement visible pour les administrateurs */}
+          {isAdmin && (
+            <Card className="mt-8 bg-primary/10 border-primary/20">
+              <CardHeader>
+                <CardTitle>Administration</CardTitle>
+                <CardDescription>Accédez au tableau de bord administrateur</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p>En tant qu'administrateur, vous pouvez accéder aux statistiques et à la gestion des utilisateurs.</p>
+              </CardContent>
+              <CardFooter>
+                <Button variant="outline" className="w-full" asChild>
+                  <Link to="/admin">Tableau de bord administrateur</Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          )}
         </div>
       </main>
       <Footer />
