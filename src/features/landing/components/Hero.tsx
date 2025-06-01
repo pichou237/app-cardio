@@ -73,8 +73,16 @@ const Hero: React.FC = () => {
                   />
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link to="/login">Se connecter</Link>
+              <Button variant="outline" size="lg" className="relative overflow-hidden group" asChild>
+                <Link to="/login">
+                  <span className="relative z-10">Se connecter</span>
+                  <motion.span 
+                    className="absolute inset-0 bg-gradient-to-r from-violet-600 to-indigo-600 opacity-0 group-hover:opacity-100"
+                    initial={false}
+                    whileHover={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </Link>
               </Button>
             </motion.div>
           </motion.div>

@@ -130,8 +130,8 @@ const ContactPage: React.FC = () => {
                       <div>
                         <h3 className="font-semibold mb-1">Adresse</h3>
                         <p className="text-muted-foreground">
-                          123 Avenue de la Santé<br />
-                          75001 Paris, France
+                          123 cites des palmiers<br />
+                          75001 douala, cameroun
                         </p>
                       </div>
                     </div>
@@ -140,7 +140,7 @@ const ContactPage: React.FC = () => {
                       <Phone className="h-6 w-6 text-primary mt-1" />
                       <div>
                         <h3 className="font-semibold mb-1">Téléphone</h3>
-                        <p className="text-muted-foreground">+33 1 23 45 67 89</p>
+                        <p className="text-muted-foreground">+237 6 23 45 67 89</p>
                       </div>
                     </div>
 
@@ -148,7 +148,7 @@ const ContactPage: React.FC = () => {
                       <Mail className="h-6 w-6 text-primary mt-1" />
                       <div>
                         <h3 className="font-semibold mb-1">Email</h3>
-                        <p className="text-muted-foreground">contact@cardiopredict.fr</p>
+                        <p className="text-muted-foreground">contact@cardiopredict.cm</p>
                       </div>
                     </div>
 
@@ -225,7 +225,7 @@ const ContactPage: React.FC = () => {
                   </div>
                   <h3 className="font-semibold mb-2">Support téléphonique</h3>
                   <p className="text-sm text-muted-foreground mb-4">Lun-Ven 9h-17h</p>
-                  <p className="text-sm font-medium">+33 1 23 45 67 90</p>
+                  <p className="text-sm font-medium">+237 6 23 45 67 90</p>
                 </CardContent>
               </Card>
 

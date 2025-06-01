@@ -58,9 +58,11 @@ const LoginForm: React.FC = () => {
       try {
         // We know the login method returns a string (the API key)
         const apiKey = await AuthService.login(credentials);
+        console.log(apiKey)
         
         if (apiKey) {
           // Authentification réussie via l'API
+          localStorage.setItem("api_key" ,apiKey);
           localStorage.setItem("userRole", "user"); // Par défaut utilisateur normal
           localStorage.setItem("isAuthenticated", "true");
           localStorage.setItem("userEmail", data.email);

@@ -22,7 +22,7 @@ const ProfilePage: React.FC = () => {
     email: localStorage.getItem("email") || "",
     phone: "06 12 34 56 78",
     birthdate: "1980-01-01",
-    address: "123 Rue de Paris, 75001 Paris",
+    address: "123 Rue d'akwa , 75001 douala",
     profilePicture: ""
   });
  

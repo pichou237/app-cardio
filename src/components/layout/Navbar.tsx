@@ -54,6 +54,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated: propIsAuthenticated = 
     { name: "Témoignages", href: "/testimonials", show: !isAuthenticated },
     { name: "Comment ça marche", href: "/how-it-works", show: !isAuthenticated },
     { name: "Contact", href: "/contact", show: !isAuthenticated },
+    { name: "dashboard", href: "/dashboard", show: isAuthenticated && userRole !== "admin" },
     { name: "Prédiction", href: "/prediction", show: isAuthenticated && userRole !== "admin" },
     { name: "Profil", href: "/profile", show: isAuthenticated && userRole !== "admin" },
     { name: "Admin", href: "/admin", show: isAuthenticated && userRole === "admin" }
@@ -90,20 +91,6 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated: propIsAuthenticated = 
                 </Link>
               ))
             }
-
-            {isAuthenticated && userRole !== "admin" && (
-              <>
-                <Link to="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-primary">
-                  Tableau de bord 
-                </Link>
-                <Link to="/prediction" className="text-sm font-medium text-muted-foreground hover:text-primary">
-                  Nouvelle prédiction
-                </Link>
-                <Link to="/profile" className="text-sm font-medium text-muted-foreground hover:text-primary">
-                  Mon profil
-                </Link>
-              </>
-            )}
           </nav>
 
           

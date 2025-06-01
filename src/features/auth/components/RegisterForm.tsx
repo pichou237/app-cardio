@@ -47,9 +47,10 @@ const RegisterForm: React.FC = () => {
         await AuthService.register({ username, password ,email});
       } catch (apiError) {
         console.error("API Error:", apiError);
+        toast.warning(apiError.message)
         // Activate offline mode if API is unreachable
         setIsOfflineMode(true);
-        toast.warning("Mode hors ligne activé: API inaccessible");
+        // toast.warning("Mode hors ligne activé: API inaccessible");
         // Early return to show the offline mode message
         setIsLoading(false);
         return;
@@ -61,7 +62,7 @@ const RegisterForm: React.FC = () => {
       localStorage.setItem("userRole", "user");
       localStorage.setItem("isAuthenticated", "true");
       localStorage.setItem("username", username);
-      localStorage.setItem("email", eamil);
+      localStorage.setItem("email", email);
       
       // Redirection après inscription
       navigate("/dashboard");
@@ -112,7 +113,7 @@ const RegisterForm: React.FC = () => {
               <FormItem>
                 <FormLabel>Nom d'utilisateur</FormLabel>
                 <FormControl>
-                  <Input placeholder="monnomdutilisateur" {...field} />
+                  <Input placeholder="ex: steph" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -126,7 +127,7 @@ const RegisterForm: React.FC = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="email@gmail.com" {...field} />
+                  <Input placeholder="ex: email@gmail.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
