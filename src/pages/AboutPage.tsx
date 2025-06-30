@@ -82,7 +82,7 @@ const AboutPage: React.FC = () => {
                 <div className="grid lg:grid-cols-2 gap-10 items-center">
                   <div className="order-2 lg:order-1">
                     <img 
-                      src="public\image.png" 
+                      src="https://ayilaa.s3.eu-west-1.amazonaws.com/attraction/3119/media/6510d60863b0b_1695602184_1695581547030.jpg" 
                       alt="IUT Douala - Campus universitaire" 
                       className="rounded-xl shadow-lg w-full h-80 object-cover hover:scale-105 transition-transform duration-300"
                     />
