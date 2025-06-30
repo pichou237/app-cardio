@@ -6,18 +6,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Link ,useNavigate} from "react-router-dom";
-import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
-import SocialLogin from "./SocialLogin";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthService } from "@/services/auth-service";
 
 const registerSchema = z.object({
-  name: z.string().min(2, { message: "Le nom doit contenir au moins 2 caractères." }),
-  email: z.string().email({ message: "Veuillez saisir un email valide." }),
+  username: z.string().min(2, { message: "Le nom d'utilisateur doit contenir au moins 2 caractères." }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères." }),
+  email: z.string().email({ message: "Entrer un email valide." }),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Les mots de passe ne correspondent pas.",
@@ -28,19 +25,15 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 const RegisterForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const [isOfflineMode, setIsOfflineMode] = useState(false);
-  const [loginError, setLoginError] = useState<string | null>(null);
   const navigate = useNavigate();
   
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
-      email: "",
+      username: "",
       password: "",
+      email: "",
       confirmPassword: "",
     },
   });
@@ -103,51 +96,30 @@ const RegisterForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full max-w-md space-y-6">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-foreground">Créer un compte</h2>
+        <h2 className="text-3xl font-bold">Créer un compte</h2>
         <p className="mt-2 text-muted-foreground">
-          Rejoignez CardioPredict dès aujourd'hui
+          Inscrivez-vous pour accéder à l'outil de prédiction
         </p>
-      </div>
-
-      {/* Social Login */}
-      <SocialLogin isRegister={true} />
-      
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <Separator className="w-full" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Ou créez un compte avec
-          </span>
-        </div>
       </div>
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
-            name="name"
+            name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nom complet</FormLabel>
+                <FormLabel>Nom d'utilisateur</FormLabel>
                 <FormControl>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      placeholder="John Doe" 
-                      className="pl-10"
-                      {...field} 
-                    />
-                  </div>
+                  <Input placeholder="ex: steph" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="email"
@@ -155,14 +127,7 @@ const RegisterForm: React.FC = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      placeholder="exemple@email.com" 
-                      className="pl-10"
-                      {...field} 
-                    />
-                  </div>
+                  <Input placeholder="ex: email@gmail.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -176,22 +141,7 @@ const RegisterForm: React.FC = () => {
               <FormItem>
                 <FormLabel>Mot de passe</FormLabel>
                 <FormControl>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••" 
-                      className="pl-10 pr-10"
-                      {...field} 
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 h-4 w-4 text-muted-foreground hover:text-foreground"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
+                  <Input type="password" placeholder="••••••••" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -205,22 +155,7 @@ const RegisterForm: React.FC = () => {
               <FormItem>
                 <FormLabel>Confirmer le mot de passe</FormLabel>
                 <FormControl>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="••••••••" 
-                      className="pl-10 pr-10"
-                      {...field} 
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-3 h-4 w-4 text-muted-foreground hover:text-foreground"
-                    >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
+                  <Input type="password" placeholder="••••••••" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -233,8 +168,7 @@ const RegisterForm: React.FC = () => {
         </form>
       </Form>
       
-
-       {isOfflineMode && (
+      {isOfflineMode && (
         <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mt-4">
           <h3 className="font-medium text-amber-800">Problème de connexion au serveur</h3>
           <p className="text-sm text-amber-700 mt-1">Le serveur semble indisponible. Vous pouvez créer un compte en mode hors ligne avec un accès limité.</p>
@@ -248,8 +182,7 @@ const RegisterForm: React.FC = () => {
           </Button>
         </div>
       )}
-
-
+      
       <div className="text-center text-sm">
         <p>
           Déjà un compte?{" "}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -6,36 +7,31 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
-import SocialLogin from "./SocialLogin";
-
 import { AuthService, AuthCredentials } from "@/services/auth-service";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-
+import { AlertTriangle } from "lucide-react";
 
 const loginSchema = z.object({
-  email: z.string().min(1, { message: "Votre email est requis." }),
+  username: z.string().min(1, { message: "Le nom d'utilisateur est requis." }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères." }),
-  username: z.string().default(""),
+  email: z.string().default(""),
   role: z.string().default("")
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 const DEFAULT_CREDENTIALS = [
-  { email: "admin@admin.com", password: "admin123", role: "admin" },
-  { email: "utilisateur.test@offline.com", password: "test123", role: "user" },
+  { username: "admin@admin.com", password: "admin123", role: "admin" },
+  { username: "utilisateur.test@offline.com", password: "test123", role: "user" },
 ];
 
 const LoginForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
-    const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   
   const form = useForm<LoginFormData>({
@@ -97,7 +93,7 @@ const LoginForm: React.FC = () => {
       
       // Vérifier les identifiants par défaut (pour démo et mode hors ligne)
       const matchedUser = DEFAULT_CREDENTIALS.find(
-        user => user.email === data.email && user.password === data.password
+        user => user.username === data.username && user.password === data.password
       );
       
       if (matchedUser) {
@@ -146,45 +142,32 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full max-w-md space-y-6">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-foreground">Se connecter</h2>
+        <h2 className="text-3xl font-bold">Se connecter</h2>
         <p className="mt-2 text-muted-foreground">
-          Accédez à votre espace CardioPredict
+          Entrez vos identifiants pour accéder à votre compte
         </p>
       </div>
-
-      {/* Social Login */}
-      <SocialLogin />
       
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <Separator className="w-full" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Ou continuez avec
-          </span>
-        </div>
-      </div>
+      {loginError && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Erreur de connexion</AlertTitle>
+          <AlertDescription>{loginError}</AlertDescription>
+        </Alert>
+      )}
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
-            name="email"
+            name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Nom d'utilisateur</FormLabel>
                 <FormControl>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      placeholder="exemple@email.com" 
-                      className="pl-10"
-                      {...field} 
-                    />
-                  </div>
+                  <Input placeholder="votrenomdutilisateur" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -198,44 +181,19 @@ const LoginForm: React.FC = () => {
               <FormItem>
                 <FormLabel>Mot de passe</FormLabel>
                 <FormControl>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••" 
-                      className="pl-10 pr-10"
-                      {...field} 
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 h-4 w-4 text-muted-foreground hover:text-foreground"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
+                  <Input type="password" placeholder="••••••••" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-
-          <div className="flex items-center justify-end">
-            <Link 
-              to="/forgot-password" 
-              className="text-sm text-primary hover:underline"
-            >
-              Mot de passe oublié ?
-            </Link>
-          </div>
           
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Connexion en cours..." : "Se connecter"}
           </Button>
         </form>
       </Form>
-
-
+      
       {isOfflineMode && (
         <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mt-4">
           <h3 className="font-medium text-amber-800">Problème de connexion au serveur</h3>

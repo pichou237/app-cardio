@@ -2,30 +2,30 @@
 import React from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import LoginForm from "@/features/auth/components/LoginForm";
+import ForgotPasswordForm from "@/features/auth/components/ForgotPasswordForm";
 
-const LoginPage: React.FC = () => {
+const ForgotPasswordPage: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-grow h-full">
-        <div className="h-full flex flex-1">
+      <main className="flex-grow">
+        <div className="min-h-full flex">
           {/* Left side - Image/Content */}
-          <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/10 to-accent/10 items-center justify-center p-12">
+          <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-accent/10 to-primary/10 items-center justify-center p-12">
             <div className="max-w-md text-center">
               <div className="mb-8">
                 <img 
-                  src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop" 
-                  alt="Santé cardiovasculaire" 
+                  src="https://images.unsplash.com/photo-1584515933487-779824d29309?w=400&h=300&fit=crop" 
+                  alt="Sécurité" 
                   className="rounded-2xl shadow-2xl mx-auto"
                 />
               </div>
               <h2 className="text-3xl font-bold text-foreground mb-4">
-                Bienvenue sur CardioPredict
+                Récupération sécurisée
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed">
-                Votre outil de prédiction des risques cardiovasculaires développé par les étudiants 
-                de l'IUT de Douala. Connectez-vous pour accéder à vos analyses personnalisées.
+                Nous vous aiderons à récupérer l'accès à votre compte CardioPredict 
+                en toute sécurité grâce à notre système de vérification par email.
               </p>
             </div>
           </div>
@@ -33,7 +33,7 @@ const LoginPage: React.FC = () => {
           {/* Right side - Form */}
           <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 lg:w-1/2">
             <div className="w-full max-w-md">
-              <LoginForm />
+              <ForgotPasswordForm />
             </div>
           </div>
         </div>
@@ -43,4 +43,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default ForgotPasswordPage;
