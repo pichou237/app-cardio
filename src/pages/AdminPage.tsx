@@ -8,12 +8,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { BarChart3, Users, TrendingUp, Edit, Trash2, Plus } from "lucide-react";
+import { BarChart3, Users, TrendingUp, Edit, Trash2, Plus, Stethoscope, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Doctor } from "@/types/appointment";
+import { AppointmentService } from "@/services/appointment-service";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 // Données fictives pour les graphiques
 const usersData = [
@@ -62,6 +65,21 @@ interface ApiUser {
   role: "admin" | "user";
 }
 
+interface Patient {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  gender: 'M' | 'F' | 'Autre';
+  address: string;
+  emergencyContact: string;
+  medicalHistory: string;
+  allergies: string;
+  currentMedications: string;
+  registrationDate: string;
+}
+
 // Mock User Data
 const initialUsersData: User[] = [
   { id: 1, name: "Sophie Martin", email: "sophie.martin@exemple.com", date: "10/05/2025", role: "user" },
@@ -89,32 +107,89 @@ const initialPredictionsData: Prediction[] = [
   { id: 5, userId: 5, userName: "Emma Leroy", date: "06/05/2025", risk: "Modéré" }
 ];
 
+// Mock patients data
+const initialPatientsData: Patient[] = [
+  {
+    id: 1,
+    name: "Sophie Martin",
+    email: "sophie.martin@exemple.com",
+    phone: "+33 6 12 34 56 78",
+    dateOfBirth: "1985-03-15",
+    gender: 'F',
+    address: "123 Rue de la Paix, 75001 Paris",
+    emergencyContact: "+33 6 98 76 54 32",
+    medicalHistory: "Hypertension, Diabète type 2",
+    allergies: "Pénicilline",
+    currentMedications: "Lisinopril, Metformine",
+    registrationDate: "2024-01-15"
+  },
+  {
+    id: 2,
+    name: "Thomas Bernard",
+    email: "thomas.bernard@exemple.com",
+    phone: "+33 6 23 45 67 89",
+    dateOfBirth: "1978-07-22",
+    gender: 'M',
+    address: "456 Avenue des Champs, 69001 Lyon",
+    emergencyContact: "+33 6 87 65 43 21",
+    medicalHistory: "Arythmie cardiaque",
+    allergies: "Aucune connue",
+    currentMedications: "Bisoprolol",
+    registrationDate: "2024-02-10"
+  }
+];
+
 const AdminPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>(initialUsersData);
   const [predictions, setPredictions] = useState<Prediction[]>(initialPredictionsData);
+  const [patients, setPatients] = useState<Patient[]>(initialPatientsData);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
+  const [isDoctorDialogOpen, setIsDoctorDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentDoctor, setCurrentDoctor] = useState<Doctor | null>(null);
   const [userFormData, setUserFormData] = useState({
     name: "",
     email: "",
     role: "user" as "admin" | "user"
   });
+  const [doctorFormData, setDoctorFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    profession: "Cardiologue",
+    medicalCenter: "",
+    yearsOfExperience: 0,
+    specialties: ""
+  });
   const [usersAll, setUsersAll] = useState<ApiUser[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const fetchedUsers = await StatisticsService.getAllUsers();
-        setUsersAll(fetchedUsers);
+        setUsersAll(Array.isArray(fetchedUsers) ? fetchedUsers : []);
       } catch (error) {
         console.error("Erreur lors de la récupération des utilisateurs:", error);
-        // Utiliser des données par défaut en cas d'erreur
         setUsersAll([]);
       }
     };
 
+    const fetchDoctors = async () => {
+      try {
+        const fetchedDoctors = await AppointmentService.getDoctors();
+        setDoctors(fetchedDoctors);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des médecins:", error);
+      }
+    };
+
     fetchUsers();
+    fetchDoctors();
   }, []);
 
   // Fonction pour convertir ApiUser vers User
@@ -126,6 +201,89 @@ const AdminPage: React.FC = () => {
       date: apiUser.first_activity,
       role: apiUser.role
     };
+  };
+
+  // Filtrage et pagination des médecins
+  const filteredDoctors = doctors.filter(doctor =>
+    doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    doctor.profession.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    doctor.medicalCenter.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredDoctors.length / itemsPerPage);
+  const paginatedDoctors = filteredDoctors.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Handle doctor form input change
+  const handleDoctorFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setDoctorFormData({ 
+      ...doctorFormData, 
+      [name]: name === 'yearsOfExperience' ? parseInt(value) || 0 : value 
+    });
+  };
+
+  // Open dialog for adding a new doctor
+  const handleAddDoctor = () => {
+    setCurrentDoctor(null);
+    setDoctorFormData({
+      name: "",
+      email: "",
+      phone: "",
+      profession: "Cardiologue",
+      medicalCenter: "",
+      yearsOfExperience: 0,
+      specialties: ""
+    });
+    setIsDoctorDialogOpen(true);
+  };
+
+  // Open dialog for editing an existing doctor
+  const handleEditDoctor = (doctor: Doctor) => {
+    setCurrentDoctor(doctor);
+    setDoctorFormData({
+      name: doctor.name,
+      email: doctor.email,
+      phone: doctor.phone,
+      profession: doctor.profession,
+      medicalCenter: doctor.medicalCenter,
+      yearsOfExperience: doctor.yearsOfExperience,
+      specialties: doctor.specialties.join(', ')
+    });
+    setIsDoctorDialogOpen(true);
+  };
+
+  // Save doctor (create or update)
+  const handleSaveDoctor = () => {
+    if (!doctorFormData.name || !doctorFormData.email || !doctorFormData.phone) {
+      toast.error("Tous les champs obligatoires doivent être remplis");
+      return;
+    }
+
+    const doctorData = {
+      ...doctorFormData,
+      id: currentDoctor?.id || Date.now().toString(),
+      age: 40, // Default value
+      availability: currentDoctor?.availability || [],
+      specialties: doctorFormData.specialties.split(',').map(s => s.trim()).filter(s => s)
+    };
+
+    if (currentDoctor) {
+      // Update existing doctor
+      const updatedDoctors = doctors.map(doctor => 
+        doctor.id === currentDoctor.id ? { ...doctor, ...doctorData } : doctor
+      );
+      setDoctors(updatedDoctors);
+      toast.success("Médecin mis à jour avec succès");
+    } else {
+      // Create new doctor
+      setDoctors([...doctors, doctorData as Doctor]);
+      toast.success("Médecin créé avec succès");
+    }
+    
+    setIsDoctorDialogOpen(false);
   };
 
   // Handle user form input change
@@ -230,7 +388,7 @@ const AdminPage: React.FC = () => {
               <StatisticsDashboard />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">Utilisateurs totaux</CardTitle>
@@ -239,6 +397,30 @@ const AdminPage: React.FC = () => {
                 <div className="text-2xl font-bold">{usersAll.length}</div>
                 <p className="text-xs text-muted-foreground">
                   <span className="text-emerald-500">+12%</span> depuis le mois dernier
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Médecins</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{doctors.length}</div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-emerald-500">+2</span> ce mois-ci
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Patients</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{patients.length}</div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-emerald-500">+5</span> cette semaine
                 </p>
               </CardContent>
             </Card>
@@ -257,18 +439,6 @@ const AdminPage: React.FC = () => {
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Risque moyen</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">26%</div>
-                <p className="text-xs text-muted-foreground">
-                  <span className="text-red-500">+2%</span> depuis le mois dernier
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">Prédictions aujourd'hui</CardTitle>
               </CardHeader>
               <CardContent>
@@ -281,7 +451,7 @@ const AdminPage: React.FC = () => {
           </div>
           
           <Tabs defaultValue="stats">
-            <TabsList className="grid w-full grid-cols-3 mb-6 md:w-auto md:inline-flex">
+            <TabsList className="grid w-full grid-cols-5 mb-6 md:w-auto md:inline-flex">
               <TabsTrigger value="stats">
                 <BarChart3 className="mr-2 h-4 w-4" />
                 Statistiques
@@ -289,6 +459,14 @@ const AdminPage: React.FC = () => {
               <TabsTrigger value="users">
                 <Users className="mr-2 h-4 w-4" />
                 Utilisateurs
+              </TabsTrigger>
+              <TabsTrigger value="doctors">
+                <Stethoscope className="mr-2 h-4 w-4" />
+                Médecins
+              </TabsTrigger>
+              <TabsTrigger value="patients">
+                <UserCheck className="mr-2 h-4 w-4" />
+                Patients
               </TabsTrigger>
               <TabsTrigger value="predictions">
                 <TrendingUp className="mr-2 h-4 w-4" />
@@ -452,6 +630,132 @@ const AdminPage: React.FC = () => {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            <TabsContent value="doctors" className="space-y-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Gestion des médecins</CardTitle>
+                    <CardDescription>Liste des médecins partenaires</CardDescription>
+                  </div>
+                  <Button onClick={handleAddDoctor} size="sm">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Ajouter
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Input
+                      placeholder="Rechercher un médecin..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="max-w-sm"
+                    />
+                  </div>
+                  
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nom</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Téléphone</TableHead>
+                        <TableHead>Centre médical</TableHead>
+                        <TableHead>Expérience</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paginatedDoctors.map((doctor) => (
+                        <TableRow key={doctor.id}>
+                          <TableCell className="font-medium">{doctor.name}</TableCell>
+                          <TableCell>{doctor.email}</TableCell>
+                          <TableCell>{doctor.phone}</TableCell>
+                          <TableCell>{doctor.medicalCenter}</TableCell>
+                          <TableCell>{doctor.yearsOfExperience} ans</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button variant="outline" size="sm" onClick={() => handleEditDoctor(doctor)}>
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button variant="outline" size="sm">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                    <TableCaption>Liste des médecins partenaires de la plateforme.</TableCaption>
+                  </Table>
+
+                  {totalPages > 1 && (
+                    <Pagination className="mt-4">
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                          <PaginationItem key={page}>
+                            <PaginationLink
+                              onClick={() => setCurrentPage(page)}
+                              isActive={page === currentPage}
+                              className="cursor-pointer"
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+                        <PaginationItem>
+                          <PaginationNext 
+                            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="patients" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Gestion des patients</CardTitle>
+                  <CardDescription>Liste des patients enregistrés</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nom</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Téléphone</TableHead>
+                        <TableHead>Date de naissance</TableHead>
+                        <TableHead>Genre</TableHead>
+                        <TableHead>Date d'inscription</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {patients.map((patient) => (
+                        <TableRow key={patient.id}>
+                          <TableCell className="font-medium">{patient.name}</TableCell>
+                          <TableCell>{patient.email}</TableCell>
+                          <TableCell>{patient.phone}</TableCell>
+                          <TableCell>{new Date(patient.dateOfBirth).toLocaleDateString('fr-FR')}</TableCell>
+                          <TableCell>{patient.gender}</TableCell>
+                          <TableCell>{new Date(patient.registrationDate).toLocaleDateString('fr-FR')}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                    <TableCaption>Liste des patients enregistrés sur la plateforme.</TableCaption>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
             
             <TabsContent value="predictions" className="space-y-6">
               <Card>
@@ -573,6 +877,92 @@ const AdminPage: React.FC = () => {
             </Button>
             <Button type="submit" onClick={handleSaveUser}>
               {currentUser ? "Mettre à jour" : "Créer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Doctor Dialog for Create/Edit */}
+      <Dialog open={isDoctorDialogOpen} onOpenChange={setIsDoctorDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{currentDoctor ? "Modifier le médecin" : "Créer un médecin"}</DialogTitle>
+            <DialogDescription>
+              {currentDoctor 
+                ? "Modifier les informations du médecin." 
+                : "Ajouter un nouveau médecin à la plateforme."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">Nom</Label>
+              <Input
+                id="name"
+                name="name"
+                value={doctorFormData.name}
+                onChange={handleDoctorFormChange}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="email" className="text-right">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                value={doctorFormData.email}
+                onChange={handleDoctorFormChange}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="phone" className="text-right">Téléphone</Label>
+              <Input
+                id="phone"
+                name="phone"
+                value={doctorFormData.phone}
+                onChange={handleDoctorFormChange}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="medicalCenter" className="text-right">Centre médical</Label>
+              <Input
+                id="medicalCenter"
+                name="medicalCenter"
+                value={doctorFormData.medicalCenter}
+                onChange={handleDoctorFormChange}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="yearsOfExperience" className="text-right">Expérience (années)</Label>
+              <Input
+                id="yearsOfExperience"
+                name="yearsOfExperience"
+                type="number"
+                value={doctorFormData.yearsOfExperience}
+                onChange={handleDoctorFormChange}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="specialties" className="text-right">Spécialités</Label>
+              <Input
+                id="specialties"
+                name="specialties"
+                value={doctorFormData.specialties}
+                onChange={handleDoctorFormChange}
+                placeholder="Séparées par des virgules"
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDoctorDialogOpen(false)}>
+              Annuler
+            </Button>
+            <Button type="submit" onClick={handleSaveDoctor}>
+              {currentDoctor ? "Mettre à jour" : "Créer"}
             </Button>
           </DialogFooter>
         </DialogContent>

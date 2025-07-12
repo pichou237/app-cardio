@@ -7,15 +7,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Doctor, PredictionReport } from '@/types/appointment';
 import { AppointmentService } from '@/services/appointment-service';
+import { FileText, Calendar as CalendarIcon, Clock, AlertTriangle } from 'lucide-react';
 
 interface BookingModalProps {
   doctor: Doctor;
   onClose: () => void;
+}
+
+interface PredictionHistory {
+  id: string;
+  date: string;
+  riskLevel: 'low' | 'medium' | 'high';
+  riskPercentage: number;
+  factors: string[];
+  recommendations: string[];
 }
 
 const BookingModal: React.FC<BookingModalProps> = ({ doctor, onClose }) => {
@@ -23,12 +34,13 @@ const BookingModal: React.FC<BookingModalProps> = ({ doctor, onClose }) => {
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [notes, setNotes] = useState('');
   const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
-  const [predictionReport, setPredictionReport] = useState<PredictionReport | null>(null);
+  const [predictionHistory, setPredictionHistory] = useState<PredictionHistory[]>([]);
+  const [selectedPredictionId, setSelectedPredictionId] = useState<string>('');
+  const [includePredictionReport, setIncludePredictionReport] = useState(true);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Charger le dernier rapport de prédiction du patient
-    loadLatestPredictionReport();
+    loadPredictionHistory();
   }, []);
 
   useEffect(() => {
@@ -37,16 +49,40 @@ const BookingModal: React.FC<BookingModalProps> = ({ doctor, onClose }) => {
     }
   }, [selectedDate]);
 
-  const loadLatestPredictionReport = () => {
-    // Simulation - récupérer le dernier rapport de prédiction
-    const mockReport: PredictionReport = {
-      riskLevel: 'medium',
-      riskPercentage: 65,
-      factors: ['Hypertension', 'Taux de cholestérol élevé', 'Sédentarité'],
-      recommendations: ['Activité physique régulière', 'Régime pauvre en sel', 'Suivi médical'],
-      date: new Date().toISOString()
-    };
-    setPredictionReport(mockReport);
+  const loadPredictionHistory = () => {
+    // Simulation - récupérer l'historique des prédictions
+    const mockHistory: PredictionHistory[] = [
+      {
+        id: '1',
+        date: '2024-12-15',
+        riskLevel: 'medium',
+        riskPercentage: 65,
+        factors: ['Hypertension', 'Taux de cholestérol élevé', 'Sédentarité'],
+        recommendations: ['Activité physique régulière', 'Régime pauvre en sel', 'Suivi médical']
+      },
+      {
+        id: '2',
+        date: '2024-11-20',
+        riskLevel: 'high',
+        riskPercentage: 78,
+        factors: ['Hypertension sévère', 'Diabète type 2', 'Antécédents familiaux'],
+        recommendations: ['Consultation cardiologique urgente', 'Ajustement médicamenteux', 'Surveillance rapprochée']
+      },
+      {
+        id: '3',
+        date: '2024-10-10',
+        riskLevel: 'low',
+        riskPercentage: 25,
+        factors: ['Légère élévation du cholestérol'],
+        recommendations: ['Maintenir une alimentation équilibrée', 'Exercice régulier']
+      }
+    ];
+    
+    setPredictionHistory(mockHistory);
+    // Sélectionner automatiquement la prédiction la plus récente
+    if (mockHistory.length > 0) {
+      setSelectedPredictionId(mockHistory[0].id);
+    }
   };
 
   const updateAvailableTimeSlots = () => {
@@ -69,10 +105,30 @@ const BookingModal: React.FC<BookingModalProps> = ({ doctor, onClose }) => {
       return;
     }
 
+    if (includePredictionReport && !selectedPredictionId) {
+      toast.error('Veuillez sélectionner un rapport de prédiction');
+      return;
+    }
+
     setLoading(true);
     try {
       const patientId = localStorage.getItem('username') || 'current-user';
       
+      let predictionReport: PredictionReport | undefined;
+      
+      if (includePredictionReport) {
+        const selectedPrediction = predictionHistory.find(p => p.id === selectedPredictionId);
+        if (selectedPrediction) {
+          predictionReport = {
+            riskLevel: selectedPrediction.riskLevel,
+            riskPercentage: selectedPrediction.riskPercentage,
+            factors: selectedPrediction.factors,
+            recommendations: selectedPrediction.recommendations,
+            date: selectedPrediction.date
+          };
+        }
+      }
+
       await AppointmentService.bookAppointment({
         patientId,
         doctorId: doctor.id,
@@ -101,21 +157,38 @@ const BookingModal: React.FC<BookingModalProps> = ({ doctor, onClose }) => {
     }
   };
 
+  const getRiskLevelText = (level: string) => {
+    switch (level) {
+      case 'low': return 'Faible';
+      case 'medium': return 'Modéré';
+      case 'high': return 'Élevé';
+      default: return 'Inconnu';
+    }
+  };
+
+  const selectedPrediction = predictionHistory.find(p => p.id === selectedPredictionId);
+
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Prendre rendez-vous avec {doctor.name}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <CalendarIcon className="h-5 w-5" />
+            Prendre rendez-vous avec {doctor.name}
+          </DialogTitle>
           <DialogDescription>
             {doctor.profession} - {doctor.medicalCenter}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Colonne gauche - Sélection date/heure */}
           <div className="space-y-4">
             <div>
-              <h3 className="font-medium mb-3">Sélectionner une date</h3>
+              <h3 className="font-medium mb-3 flex items-center gap-2">
+                <CalendarIcon className="h-4 w-4" />
+                Sélectionner une date
+              </h3>
               <Calendar
                 mode="single"
                 selected={selectedDate}
@@ -134,7 +207,10 @@ const BookingModal: React.FC<BookingModalProps> = ({ doctor, onClose }) => {
 
             {selectedDate && availableTimeSlots.length > 0 && (
               <div>
-                <h3 className="font-medium mb-3">Sélectionner une heure</h3>
+                <h3 className="font-medium mb-3 flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  Sélectionner une heure
+                </h3>
                 <Select value={selectedTime} onValueChange={setSelectedTime}>
                   <SelectTrigger>
                     <SelectValue placeholder="Choisir un créneau" />
@@ -161,12 +237,77 @@ const BookingModal: React.FC<BookingModalProps> = ({ doctor, onClose }) => {
             </div>
           </div>
 
-          {/* Colonne droite - Rapport de prédiction */}
+          {/* Colonne centrale - Sélection du rapport */}
           <div className="space-y-4">
-            {predictionReport && (
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="includePrediction"
+                checked={includePredictionReport}
+                onCheckedChange={setIncludePredictionReport}
+              />
+              <label htmlFor="includePrediction" className="font-medium">
+                Inclure un rapport de prédiction
+              </label>
+            </div>
+
+            {includePredictionReport && (
+              <div>
+                <h3 className="font-medium mb-3 flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Sélectionner un rapport
+                </h3>
+                <div className="space-y-2">
+                  {predictionHistory.map((prediction) => (
+                    <Card 
+                      key={prediction.id} 
+                      className={`cursor-pointer transition-colors ${
+                        selectedPredictionId === prediction.id 
+                          ? 'border-primary bg-primary/5' 
+                          : 'hover:bg-muted/50'
+                      }`}
+                      onClick={() => setSelectedPredictionId(prediction.id)}
+                    >
+                      <CardContent className="p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">
+                            {format(new Date(prediction.date), 'dd/MM/yyyy', { locale: fr })}
+                          </span>
+                          <Badge className={getRiskLevelColor(prediction.riskLevel)}>
+                            {getRiskLevelText(prediction.riskLevel)}
+                          </Badge>
+                        </div>
+                        <div className="text-lg font-bold text-primary">
+                          {prediction.riskPercentage}%
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {prediction.factors.slice(0, 2).join(', ')}
+                          {prediction.factors.length > 2 && '...'}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+                
+                {predictionHistory.length === 0 && (
+                  <div className="text-center py-4 text-muted-foreground">
+                    <AlertTriangle className="h-8 w-8 mx-auto mb-2" />
+                    <p>Aucun rapport de prédiction disponible</p>
+                    <p className="text-sm">Effectuez d'abord une analyse CardioPredict</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Colonne droite - Aperçu du rapport sélectionné */}
+          <div className="space-y-4">
+            {includePredictionReport && selectedPrediction && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Votre rapport CardioPredict</CardTitle>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Rapport sélectionné
+                  </CardTitle>
                   <CardDescription>
                     Ce rapport sera transmis au médecin avant votre rendez-vous
                   </CardDescription>
@@ -175,21 +316,22 @@ const BookingModal: React.FC<BookingModalProps> = ({ doctor, onClose }) => {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium">Niveau de risque</span>
-                      <Badge className={getRiskLevelColor(predictionReport.riskLevel)}>
-                        {predictionReport.riskLevel === 'low' && 'Faible'}
-                        {predictionReport.riskLevel === 'medium' && 'Modéré'}
-                        {predictionReport.riskLevel === 'high' && 'Élevé'}
+                      <Badge className={getRiskLevelColor(selectedPrediction.riskLevel)}>
+                        {getRiskLevelText(selectedPrediction.riskLevel)}
                       </Badge>
                     </div>
                     <div className="text-2xl font-bold text-primary">
-                      {predictionReport.riskPercentage}%
+                      {selectedPrediction.riskPercentage}%
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Analyse du {format(new Date(selectedPrediction.date), 'dd/MM/yyyy', { locale: fr })}
                     </div>
                   </div>
 
                   <div>
                     <h4 className="font-medium mb-2">Facteurs de risque identifiés</h4>
                     <div className="space-y-1">
-                      {predictionReport.factors.map((factor, index) => (
+                      {selectedPrediction.factors.map((factor, index) => (
                         <div key={index} className="text-sm bg-red-50 text-red-700 px-2 py-1 rounded">
                           • {factor}
                         </div>
@@ -200,13 +342,23 @@ const BookingModal: React.FC<BookingModalProps> = ({ doctor, onClose }) => {
                   <div>
                     <h4 className="font-medium mb-2">Recommandations</h4>
                     <div className="space-y-1">
-                      {predictionReport.recommendations.map((rec, index) => (
+                      {selectedPrediction.recommendations.map((rec, index) => (
                         <div key={index} className="text-sm bg-blue-50 text-blue-700 px-2 py-1 rounded">
                           • {rec}
                         </div>
                       ))}
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {!includePredictionReport && (
+              <Card className="border-dashed">
+                <CardContent className="p-6 text-center text-muted-foreground">
+                  <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p>Aucun rapport ne sera transmis</p>
+                  <p className="text-sm">Le médecin n'aura pas accès à vos données de prédiction</p>
                 </CardContent>
               </Card>
             )}

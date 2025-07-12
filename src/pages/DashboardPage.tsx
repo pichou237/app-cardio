@@ -11,11 +11,12 @@ import HistoryStats from "@/features/prediction/components/HistoryStats";
 import DoctorsList from "@/features/doctors/components/DoctorsList";
 import PatientAppointments from "@/features/appointments/components/PatientAppointments";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
-import { Calendar, Stethoscope, UserCircle, BarChart3 } from "lucide-react";
+import { Calendar, Stethoscope, UserCircle, BarChart3, Users } from "lucide-react";
 
 const DashboardPage: React.FC = () => {
   const { role, isAuthenticated, isOfflineMode } = useCurrentUser();
   const isAdmin = role === "admin";
+  const isDoctor = role === "doctor";
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -82,7 +83,7 @@ const DashboardPage: React.FC = () => {
           
           {/* Onglets des fonctionnalités */}
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className={`grid w-full ${isAdmin || isDoctor ? 'grid-cols-5' : 'grid-cols-3'}`}>
               <TabsTrigger value="overview" className="flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" />
                 Aperçu
@@ -95,6 +96,12 @@ const DashboardPage: React.FC = () => {
                 <Calendar className="h-4 w-4" />
                 Rendez-vous
               </TabsTrigger>
+              {isDoctor && (
+                <TabsTrigger value="doctor-space" className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Espace médecin
+                </TabsTrigger>
+              )}
               {isAdmin && (
                 <TabsTrigger value="admin" className="flex items-center gap-2">
                   <UserCircle className="h-4 w-4" />
@@ -121,6 +128,25 @@ const DashboardPage: React.FC = () => {
             <TabsContent value="appointments" className="mt-6">
               <PatientAppointments />
             </TabsContent>
+            
+            {isDoctor && (
+              <TabsContent value="doctor-space" className="mt-6">
+                <Card className="bg-blue-50 border-blue-200">
+                  <CardHeader>
+                    <CardTitle>Espace Médecin</CardTitle>
+                    <CardDescription>Accédez à votre tableau de bord médecin complet</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p>En tant que médecin, vous pouvez accéder à vos rendez-vous, gérer vos patients et consulter les rapports de prédiction.</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button className="w-full" asChild>
+                      <Link to="/doctor-dashboard">Tableau de bord médecin</Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </TabsContent>
+            )}
             
             {isAdmin && (
               <TabsContent value="admin" className="mt-6">
