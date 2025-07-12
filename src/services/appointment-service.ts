@@ -1,55 +1,88 @@
 
 import { Doctor, Appointment, NotificationTemplate } from "@/types/appointment";
 
-// Données mockées des médecins partenaires
+// Données mockées des médecins partenaires camerounais
 const mockDoctors: Doctor[] = [
   {
     id: "1",
-    name: "Dr. Marie Dubois",
+    name: "Dr. Marie Ngo Bell",
     profession: "Cardiologue",
-    medicalCenter: "Centre Cardiologique de Paris",
+    medicalCenter: "Hôpital Central de Yaoundé",
     age: 45,
     yearsOfExperience: 18,
     availability: [
-      { day: "Lundi", timeSlots: ["09:00", "10:00", "14:00", "15:00"] },
-      { day: "Mercredi", timeSlots: ["09:00", "11:00", "14:00", "16:00"] },
-      { day: "Vendredi", timeSlots: ["08:00", "09:00", "10:00", "11:00"] }
+      { day: "Lundi", timeSlots: ["08:00", "09:00", "14:00", "15:00"] },
+      { day: "Mercredi", timeSlots: ["08:00", "10:00", "14:00", "16:00"] },
+      { day: "Vendredi", timeSlots: ["07:30", "08:30", "09:30", "10:30"] }
     ],
-    specialties: ["Cardiologie interventionnelle", "Électrophysiologie"],
-    email: "marie.dubois@cardio-paris.fr",
-    phone: "+33 1 42 34 56 78"
+    specialties: ["Cardiologie interventionnelle", "Échocardiographie"],
+    email: "marie.ngobell@chu-yaounde.cm",
+    phone: "+237 6 75 43 21 89",
+    profileImage: undefined
   },
   {
     id: "2",
-    name: "Dr. Jean Martin",
+    name: "Dr. Paul Mbarga Essomba",
     profession: "Cardiologue",
-    medicalCenter: "Hôpital Saint-Louis",
+    medicalCenter: "Hôpital Général de Douala",
     age: 52,
     yearsOfExperience: 25,
     availability: [
-      { day: "Mardi", timeSlots: ["09:00", "10:00", "11:00", "15:00"] },
-      { day: "Jeudi", timeSlots: ["08:00", "09:00", "14:00", "15:00"] },
-      { day: "Samedi", timeSlots: ["09:00", "10:00", "11:00"] }
+      { day: "Mardi", timeSlots: ["08:00", "09:00", "10:00", "15:00"] },
+      { day: "Jeudi", timeSlots: ["07:30", "08:30", "14:00", "15:00"] },
+      { day: "Samedi", timeSlots: ["08:00", "09:00", "10:00"] }
     ],
     specialties: ["Cardiologie pédiatrique", "Insuffisance cardiaque"],
-    email: "jean.martin@saint-louis.fr",
-    phone: "+33 1 45 67 89 01"
+    email: "paul.mbarga@hgd-douala.cm",
+    phone: "+237 6 94 56 78 12"
   },
   {
     id: "3",
-    name: "Dr. Sophie Leroy",
+    name: "Dr. Aminatou Fouda",
     profession: "Cardiologue",
-    medicalCenter: "Clinique du Cœur",
+    medicalCenter: "Clinique des Spécialités de Yaoundé",
     age: 38,
     yearsOfExperience: 12,
     availability: [
-      { day: "Lundi", timeSlots: ["08:00", "09:00", "10:00", "16:00"] },
+      { day: "Lundi", timeSlots: ["07:30", "08:30", "09:30", "16:00"] },
       { day: "Mardi", timeSlots: ["14:00", "15:00", "16:00", "17:00"] },
-      { day: "Jeudi", timeSlots: ["09:00", "10:00", "11:00", "15:00"] }
+      { day: "Jeudi", timeSlots: ["08:00", "09:00", "10:00", "15:00"] }
     ],
     specialties: ["Échocardiographie", "Cardiologie du sport"],
-    email: "sophie.leroy@clinique-coeur.fr",
-    phone: "+33 1 48 52 63 74"
+    email: "aminatou.fouda@clinique-specialites.cm",
+    phone: "+237 6 82 35 67 94"
+  },
+  {
+    id: "4",
+    name: "Dr. Jean-Baptiste Owona",
+    profession: "Cardiologue",
+    medicalCenter: "Centre Médical d'Excellence de Bafoussam",
+    age: 47,
+    yearsOfExperience: 20,
+    availability: [
+      { day: "Mercredi", timeSlots: ["08:00", "09:00", "14:00", "15:00"] },
+      { day: "Vendredi", timeSlots: ["07:30", "08:30", "09:30", "16:00"] },
+      { day: "Samedi", timeSlots: ["08:00", "09:00", "10:00"] }
+    ],
+    specialties: ["Électrophysiologie cardiaque", "Stimulation cardiaque"],
+    email: "jb.owona@cme-bafoussam.cm",
+    phone: "+237 6 77 89 43 56"
+  },
+  {
+    id: "5",
+    name: "Dr. Françoise Tchounke",
+    profession: "Cardiologue",
+    medicalCenter: "Hôpital de District de Garoua",
+    age: 41,
+    yearsOfExperience: 15,
+    availability: [
+      { day: "Lundi", timeSlots: ["08:00", "09:00", "15:00", "16:00"] },
+      { day: "Mercredi", timeSlots: ["07:30", "08:30", "14:30", "15:30"] },
+      { day: "Vendredi", timeSlots: ["08:00", "09:00", "10:00", "16:00"] }
+    ],
+    specialties: ["Cardiologie préventive", "Hypertension artérielle"],
+    email: "francoise.tchounke@hd-garoua.cm",
+    phone: "+237 6 95 32 78 41"
   }
 ];
 
