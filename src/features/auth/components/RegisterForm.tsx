@@ -15,7 +15,7 @@ import SocialLogin from "./SocialLogin";
 import { AuthService } from "@/services/auth-service";
 
 const registerSchema = z.object({
-  name: z.string().min(2, { message: "Le nom doit contenir au moins 2 caractères." }),
+  username: z.string().min(2, { message: "Le nom doit contenir au moins 2 caractères." }),
   email: z.string().email({ message: "Veuillez saisir un email valide." }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères." }),
   confirmPassword: z.string(),
@@ -38,7 +38,7 @@ const RegisterForm: React.FC = () => {
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
+      username: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -51,7 +51,10 @@ const RegisterForm: React.FC = () => {
       const { username, password , email } = data;
       console.log("data:",data)
       try {
-        await AuthService.register({ username, password ,email});
+        await AuthService.register({
+          username, password, email,
+          role: "utilisateur"
+        });
       } catch (apiError) {
         console.error("API Error:", apiError);
         toast.warning(apiError.message)
@@ -70,6 +73,7 @@ const RegisterForm: React.FC = () => {
       localStorage.setItem("isAuthenticated", "true");
       localStorage.setItem("username", username);
       localStorage.setItem("email", email);
+      localStorage.setItem("isOfflineMode", "false");
       
       // Redirection après inscription
       navigate("/dashboard");
@@ -129,7 +133,7 @@ const RegisterForm: React.FC = () => {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
-            name="name"
+            name="username"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nom complet</FormLabel>
@@ -137,7 +141,7 @@ const RegisterForm: React.FC = () => {
                   <div className="relative">
                     <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input 
-                      placeholder="John Doe" 
+                      placeholder="steph prad" 
                       className="pl-10"
                       {...field} 
                     />

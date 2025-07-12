@@ -15,7 +15,7 @@ const RegisterPage: React.FC = () => {
             <div className="max-w-md text-center">
               <div className="mb-8">
                 <img 
-                  src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=300&fit=crop" 
+                  src="https://alldoctors.moscow/upload/iblock/e85/1wclp9nv1449x8vd2bpknu2vhal2kywo.webp" 
                   alt="Équipe médicale" 
                   className="rounded-2xl shadow-2xl mx-auto"
                 />

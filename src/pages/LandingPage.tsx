@@ -5,6 +5,8 @@ import Footer from "@/components/layout/Footer";
 import Hero from "@/features/landing/components/Hero";
 import Features from "@/features/landing/components/Features";
 import PatientJourney from "@/features/landing/components/PatientJourney";
+import PricingCards from "@/features/pricing/PricingCard";
+
 
 const LandingPage: React.FC = () => {
   return (
@@ -14,6 +16,7 @@ const LandingPage: React.FC = () => {
         <Hero />
         <PatientJourney />
         <Features />
+        <PricingCards />
       </main>
       <Footer />
     </div>

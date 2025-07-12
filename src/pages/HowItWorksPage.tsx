@@ -90,9 +90,9 @@ const HowItWorksPage: React.FC = () => {
                         <div className="text-center">
                           <img 
                             src={`https://images.unsplash.com/photo-${
-                              index === 0 ? '1516549655813-0de249288f58' :
-                              index === 1 ? '1576091160399-112ba8d25d1d' :
-                              index === 2 ? '1559757148-5c350d9d1b3b' :
+                              index === 0 ? '1551601651-2a8555f1a136' :
+                              index === 1 ? '1551601651-2a8555f1a136' :
+                              index === 2 ? '1551601651-2a8555f1a136' :
                               index === 3 ? '1551601651-2a8555f1a136' :
                               '1582750433449-648ed127bb54'
                             }?q=80&w=400&auto=format&fit=crop`}
