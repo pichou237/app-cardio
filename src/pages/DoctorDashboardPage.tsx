@@ -17,15 +17,45 @@ const DoctorDashboardPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [doctorInfo] = useState<Doctor>({
     id: "1",
-    name: "Dr. Marie Dubois",
+    name: "Dr. Marie Ngo Bell",
     profession: "Cardiologue",
-    medicalCenter: "Centre Cardiologique de Paris",
+    medicalCenter: "Hôpital Central de Yaoundé",
     age: 45,
     yearsOfExperience: 18,
-    availability: [],
+    availability: [
+      { day: "Lundi", timeSlots: ["08:00", "09:00", "14:00", "15:00"], isAvailable: true },
+      { day: "Mercredi", timeSlots: ["08:00", "10:00", "14:00", "16:00"], isAvailable: true },
+      { day: "Vendredi", timeSlots: ["07:30", "08:30", "09:30", "10:30"], isAvailable: true }
+    ],
     specialties: ["Cardiologie interventionnelle", "Électrophysiologie"],
-    email: "marie.dubois@cardio-paris.fr",
-    phone: "+33 1 42 34 56 78"
+    email: "marie.ngobell@chu-yaounde.cm",
+    phone: "+237 6 75 43 21 89",
+    profileImage: undefined,
+    licenseNumber: "ORD-CM-001-2005",
+    graduationYear: 2005,
+    university: "Université de Yaoundé I",
+    certifications: ["Cardiologie interventionnelle", "Échocardiographie doppler"],
+    languages: ["Français", "Anglais", "Ewondo"],
+    status: 'active',
+    contractType: 'permanent',
+    joinDate: "2008-03-15",
+    address: "Avenue Kennedy, Bastos",
+    city: "Yaoundé",
+    region: "Centre",
+    country: "Cameroun",
+    consultationFee: 25000,
+    currency: "XAF",
+    acceptsInsurance: true,
+    totalPatients: 1250,
+    totalAppointments: 3200,
+    averageRating: 4.8,
+    totalReviews: 142,
+    maxAppointmentsPerDay: 12,
+    appointmentDuration: 30,
+    breakDuration: 15,
+    createdAt: "2008-03-15T00:00:00Z",
+    updatedAt: "2024-12-15T10:30:00Z",
+    lastLoginAt: "2024-12-15T08:00:00Z"
   });
 
   useEffect(() => {

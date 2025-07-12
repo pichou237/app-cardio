@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -119,11 +120,33 @@ const BookingModal: React.FC<BookingModalProps> = ({ doctor, onClose }) => {
         const selectedPrediction = predictionHistory.find(p => p.id === selectedPredictionId);
         if (selectedPrediction) {
           predictionReport = {
+            id: selectedPrediction.id,
+            patientId: patientId,
             riskLevel: selectedPrediction.riskLevel,
             riskPercentage: selectedPrediction.riskPercentage,
             factors: selectedPrediction.factors,
             recommendations: selectedPrediction.recommendations,
-            date: selectedPrediction.date
+            date: selectedPrediction.date,
+            algorithmVersion: "v2.1.0",
+            inputData: {
+              demographics: {},
+              healthMetrics: {},
+              cardiacDetails: {},
+              symptoms: {},
+              ecgResults: {}
+            },
+            riskFactors: {
+              modifiable: selectedPrediction.factors,
+              nonModifiable: []
+            },
+            urgencyLevel: selectedPrediction.riskLevel === 'high' ? 'urgent' : 
+                         selectedPrediction.riskLevel === 'medium' ? 'routine' : 'monitoring',
+            followUpRecommended: true,
+            specialistReferral: selectedPrediction.riskLevel === 'high',
+            createdAt: selectedPrediction.date,
+            reviewedBy: undefined,
+            reviewDate: undefined,
+            reviewNotes: undefined
           };
         }
       }
@@ -134,7 +157,14 @@ const BookingModal: React.FC<BookingModalProps> = ({ doctor, onClose }) => {
         date: format(selectedDate, 'yyyy-MM-dd'),
         time: selectedTime,
         predictionReport,
-        notes: notes.trim() || undefined
+        notes: notes.trim() || undefined,
+        appointmentType: 'consultation',
+        duration: doctor.appointmentDuration,
+        consultationFee: doctor.consultationFee,
+        paymentStatus: 'pending',
+        reminderSent: false,
+        confirmationSent: false,
+        updatedAt: new Date().toISOString()
       });
 
       toast.success('Rendez-vous demandé avec succès! Vous recevrez une confirmation par email.');
