@@ -55,6 +55,14 @@ interface User {
   role: "admin" | "user";
 }
 
+interface ApiUser {
+  id: number;
+  username: string;
+  email: string;
+  first_activity: string;
+  role: "admin" | "user";
+}
+
 // Mock User Data
 const initialUsersData: User[] = [
   { id: 1, name: "Sophie Martin", email: "sophie.martin@exemple.com", date: "10/05/2025", role: "user" },
@@ -93,12 +101,18 @@ const AdminPage: React.FC = () => {
     email: "",
     role: "user" as "admin" | "user"
   });
-  const [usersAll, setUsersAll] = useState<[]>([]);
+  const [usersAll, setUsersAll] = useState<ApiUser[]>([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const fetchedUsers = await StatisticsService.getAllUsers();
-      setUsersAll(fetchedUsers);
+      try {
+        const fetchedUsers = await StatisticsService.getAllUsers();
+        setUsersAll(fetchedUsers);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des utilisateurs:", error);
+        // Utiliser des données par défaut en cas d'erreur
+        setUsersAll([]);
+      }
     };
 
     fetchUsers();
@@ -200,7 +214,7 @@ const AdminPage: React.FC = () => {
             <p className="text-muted-foreground">Bienvenue sur le tableau de bord d'administration</p>
           </div>
           
-            {/* statisque personnalise */}
+          {/* statisque personnalise */}
           <div className="grid mb-5">
               <StatisticsDashboard />
           </div>

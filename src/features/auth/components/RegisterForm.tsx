@@ -32,7 +32,6 @@ const RegisterForm: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [isOfflineMode, setIsOfflineMode] = useState(false);
-  const [loginError, setLoginError] = useState<string | null>(null);
   const navigate = useNavigate();
   
   const form = useForm<RegisterFormData>({
@@ -48,16 +47,15 @@ const RegisterForm: React.FC = () => {
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
-      const { username, password , email } = data;
-      console.log("data:",data)
+      const { name, password, email } = data;
+      console.log("data:", data);
       try {
-        await AuthService.register({ username, password ,email});
-      } catch (apiError) {
+        await AuthService.register({ username: name, password, email });
+      } catch (apiError: any) {
         console.error("API Error:", apiError);
-        toast.warning(apiError.message)
+        toast.warning(apiError.message);
         // Activate offline mode if API is unreachable
         setIsOfflineMode(true);
-        // toast.warning("Mode hors ligne activé: API inaccessible");
         // Early return to show the offline mode message
         setIsLoading(false);
         return;
@@ -68,7 +66,7 @@ const RegisterForm: React.FC = () => {
       // Enregistrer les informations d'authentification
       localStorage.setItem("userRole", "user");
       localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("username", username);
+      localStorage.setItem("username", name);
       localStorage.setItem("email", email);
       
       // Redirection après inscription
@@ -84,12 +82,12 @@ const RegisterForm: React.FC = () => {
   const handleOfflineRegister = () => {
     setIsLoading(true);
     try {
-      const username = form.getValues("username") || "utilisateur.test";
+      const name = form.getValues("name") || "utilisateur.test";
       
       // Set offline user
       localStorage.setItem("userRole", "user");
       localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("username", username);
+      localStorage.setItem("username", name);
       localStorage.setItem("isOfflineMode", "true");
       
       toast.success("Inscription en mode hors ligne réussie!");

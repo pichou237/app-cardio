@@ -20,8 +20,6 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 const loginSchema = z.object({
   email: z.string().min(1, { message: "Votre email est requis." }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères." }),
-  username: z.string().default(""),
-  role: z.string().default("")
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -35,13 +33,13 @@ const LoginForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
-    const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
@@ -53,31 +51,26 @@ const LoginForm: React.FC = () => {
     try {
       // Cast to AuthCredentials to ensure type safety
       const credentials: AuthCredentials = {
-        username: data.username,
+        username: data.email, // Utiliser l'email comme nom d'utilisateur
         email: data.email,
         password: data.password,
-        role: data.role
       };
       
       try {
         // We know the login method returns a string (the API key)
         const apiKey = await AuthService.login(credentials);
-        console.log(apiKey)
+        console.log(apiKey);
         
         if (apiKey) {
           // Authentification réussie via l'API
-          localStorage.setItem("api_key" ,apiKey);
+          localStorage.setItem("api_key", apiKey);
           localStorage.setItem("userRole", "user"); // Par défaut utilisateur normal
           localStorage.setItem("isAuthenticated", "true");
           localStorage.setItem("userEmail", data.email);
           localStorage.setItem("isOfflineMode", "false");
-          console.log("user:",data);
+          console.log("user:", data);
           toast.success("Connexion réussie!");
-          if(data.role == 'admin'){
-            navigate('/admin')
-          }else{
-            navigate("/dashboard");
-          }
+          navigate("/dashboard");
           return;
         }
       } catch (apiError: any) {
@@ -104,7 +97,7 @@ const LoginForm: React.FC = () => {
         // Stocker les infos utilisateur dans localStorage
         localStorage.setItem("userRole", matchedUser.role);
         localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("userEmail", matchedUser.username);
+        localStorage.setItem("userEmail", matchedUser.email);
         localStorage.setItem("isOfflineMode", isOfflineMode ? "true" : "false");
         
         if (matchedUser.role === "admin") {
@@ -167,6 +160,13 @@ const LoginForm: React.FC = () => {
           </span>
         </div>
       </div>
+
+      {loginError && (
+        <Alert variant="destructive">
+          <AlertTitle>Erreur de connexion</AlertTitle>
+          <AlertDescription>{loginError}</AlertDescription>
+        </Alert>
+      )}
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
