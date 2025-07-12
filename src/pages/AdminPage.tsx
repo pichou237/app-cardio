@@ -1,4 +1,3 @@
-
 import React, { useState ,useEffect} from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -118,6 +117,16 @@ const AdminPage: React.FC = () => {
     fetchUsers();
   }, []);
 
+  // Fonction pour convertir ApiUser vers User
+  const convertApiUserToUser = (apiUser: ApiUser): User => {
+    return {
+      id: apiUser.id,
+      name: apiUser.username,
+      email: apiUser.email,
+      date: apiUser.first_activity,
+      role: apiUser.role
+    };
+  };
 
   // Handle user form input change
   const handleUserFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,7 +142,8 @@ const AdminPage: React.FC = () => {
   };
 
   // Open dialog for editing an existing user
-  const handleEditUser = (user: User) => {
+  const handleEditUser = (apiUser: ApiUser) => {
+    const user = convertApiUserToUser(apiUser);
     setCurrentUser(user);
     setUserFormData({
       name: user.name,
@@ -144,7 +154,8 @@ const AdminPage: React.FC = () => {
   };
 
   // Open dialog for deleting a user
-  const handleDeleteUserConfirm = (user: User) => {
+  const handleDeleteUserConfirm = (apiUser: ApiUser) => {
+    const user = convertApiUserToUser(apiUser);
     setCurrentUser(user);
     setIsDeleteDialogOpen(true);
   };
@@ -225,7 +236,7 @@ const AdminPage: React.FC = () => {
                 <CardTitle className="text-sm font-medium">Utilisateurs totaux</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{users.length}</div>
+                <div className="text-2xl font-bold">{usersAll.length}</div>
                 <p className="text-xs text-muted-foreground">
                   <span className="text-emerald-500">+12%</span> depuis le mois dernier
                 </p>

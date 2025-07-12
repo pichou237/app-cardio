@@ -25,8 +25,8 @@ export const usePredictionHistory = () => {
     try {
       const historyData = await PredictionService.getHistory(apiKey);
       console.log("historyData:", historyData);
-      // Directement utiliser historyData si c'est un tableau
-      setHistory(Array.isArray(historyData) ? historyData : historyData.history || []);
+      // historyData est déjà un tableau de HistoryEntry
+      setHistory(Array.isArray(historyData) ? historyData : []);
     } catch (err) {
       console.error("Erreur lors de la récupération de l'historique:", err);
       setError("Impossible de charger l'historique des prédictions");
