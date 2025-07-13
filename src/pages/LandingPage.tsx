@@ -6,6 +6,7 @@ import Hero from "@/features/landing/components/Hero";
 import Features from "@/features/landing/components/Features";
 import PatientJourney from "@/features/landing/components/PatientJourney";
 import PricingCards from "@/features/pricing/PricingCard";
+import MedicalOpinions from "@/features/landing/components/MedicalOpinions";
 
 
 const LandingPage: React.FC = () => {
@@ -15,6 +16,7 @@ const LandingPage: React.FC = () => {
       <main className="flex-grow">
         <Hero />
         <PatientJourney />
+        <MedicalOpinions />
         <Features />
         <PricingCards />
       </main>
