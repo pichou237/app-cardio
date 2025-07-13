@@ -2,15 +2,49 @@
 import { healthKnowledgeBase } from "../types";
 
 export const findAnswer = (query: string): string => {
-  query = query.toLowerCase();
+  const lowerQuery = query.toLowerCase();
   
-  // Vérifier si la question contient des mots-clés de notre base de connaissances
-  for (const item of healthKnowledgeBase) {
-    if (item.keywords.some(keyword => query.includes(keyword))) {
-      return item.response;
+  // Score chaque élément de la base de connaissances
+  const scoredItems = healthKnowledgeBase.map(item => {
+    let score = 0;
+    
+    // Vérifier les mots-clés exacts
+    for (const keyword of item.keywords) {
+      if (lowerQuery.includes(keyword.toLowerCase())) {
+        score += keyword.length; // Plus le mot-clé est long, plus le score est élevé
+      }
     }
+    
+    // Bonus pour les correspondances multiples
+    const matchingKeywords = item.keywords.filter(keyword => 
+      lowerQuery.includes(keyword.toLowerCase())
+    );
+    if (matchingKeywords.length > 1) {
+      score += matchingKeywords.length * 2;
+    }
+    
+    return { item, score };
+  });
+  
+  // Trouver la meilleure correspondance
+  const bestMatch = scoredItems.reduce((best, current) => 
+    current.score > best.score ? current : best
+  );
+  
+  // Si on a trouvé une correspondance décente, la retourner
+  if (bestMatch.score > 0) {
+    return bestMatch.item.response;
   }
   
-  // Réponse par défaut si aucun mot-clé n'est trouvé
-  return "Je suis désolé, je n'ai pas d'information spécifique sur ce sujet. Je vous recommande de consulter un professionnel de santé pour obtenir des conseils personnalisés.";
+  // Réponses contextuelles pour les questions communes sans correspondance exacte
+  if (lowerQuery.includes("comment") || lowerQuery.includes("que faire")) {
+    return "Je peux vous aider avec des informations sur la prévention des maladies cardiaques, les symptômes, l'alimentation, l'exercice, et bien plus. Posez-moi une question spécifique sur la santé cardiaque !";
+  }
+  
+  if (lowerQuery.includes("docteur") || lowerQuery.includes("médecin")) {
+    return "Je peux vous donner des informations générales sur la santé cardiaque, mais pour un diagnostic ou un traitement spécifique, il est important de consulter un médecin. Vous pouvez prendre rendez-vous avec nos cardiologues partenaires via l'onglet 'Médecins'.";
+  }
+  
+  // Réponse par défaut améliorée
+  return "Je suis spécialisé dans la santé cardiaque. Vous pouvez me poser des questions sur : la prévention des maladies cardiaques, les symptômes à surveiller, l'alimentation, l'exercice, l'hypertension, le diabète, le cholestérol, ou le stress. Comment puis-je vous aider ?";
 };

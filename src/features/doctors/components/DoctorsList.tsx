@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar, Clock, MapPin, Phone, Mail, User, Award, Search, Grid3X3, List, Eye, GraduationCap, Languages, Building2, CreditCard, Star } from 'lucide-react';
 import { Doctor } from '@/types/appointment';
 import { AppointmentService } from '@/services/appointment-service';
@@ -19,6 +20,20 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
+const cameroonRegions = [
+  { name: 'Toutes les régions', value: '' },
+  { name: 'Centre', value: 'centre', cities: ['Yaoundé', 'Mbalmayo', 'Obala', 'Monatélé'] },
+  { name: 'Littoral', value: 'littoral', cities: ['Douala', 'Edéa', 'Nkongsamba', 'Kribi'] },
+  { name: 'Ouest', value: 'ouest', cities: ['Bafoussam', 'Dschang', 'Mbouda', 'Bandjoun'] },
+  { name: 'Nord-Ouest', value: 'nord-ouest', cities: ['Bamenda', 'Kumbo', 'Wum', 'Ndop'] },
+  { name: 'Sud-Ouest', value: 'sud-ouest', cities: ['Buea', 'Limbe', 'Kumba', 'Mamfe'] },
+  { name: 'Sud', value: 'sud', cities: ['Ebolowa', 'Sangmélima', 'Ambam', 'Djoum'] },
+  { name: 'Est', value: 'est', cities: ['Bertoua', 'Batouri', 'Yokadouma', 'Abong-Mbang'] },
+  { name: 'Adamaoua', value: 'adamaoua', cities: ['Ngaoundéré', 'Tibati', 'Tignère', 'Banyo'] },
+  { name: 'Nord', value: 'nord', cities: ['Garoua', 'Maroua', 'Guidiguis', 'Yagoua'] },
+  { name: 'Extrême-Nord', value: 'extreme-nord', cities: ['Maroua', 'Mokolo', 'Kousséri', 'Yagoua'] }
+];
+
 const DoctorsList: React.FC = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([]);
@@ -27,6 +42,8 @@ const DoctorsList: React.FC = () => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
@@ -37,7 +54,7 @@ const DoctorsList: React.FC = () => {
 
   useEffect(() => {
     filterDoctors();
-  }, [searchTerm, doctors]);
+  }, [searchTerm, selectedRegion, selectedCity, doctors]);
 
   const loadDoctors = async () => {
     try {
@@ -52,24 +69,53 @@ const DoctorsList: React.FC = () => {
   };
 
   const filterDoctors = () => {
-    if (!searchTerm) {
-      setFilteredDoctors(doctors);
-      setCurrentPage(1);
-      return;
+    let filtered = doctors;
+
+    // Filtrage par terme de recherche
+    if (searchTerm) {
+      filtered = filtered.filter(doctor => 
+        doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doctor.profession.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doctor.medicalCenter.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doctor.specialties.some(specialty => 
+          specialty.toLowerCase().includes(searchTerm.toLowerCase())
+        ) ||
+        doctor.city.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
-    const filtered = doctors.filter(doctor => 
-      doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doctor.profession.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doctor.medicalCenter.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doctor.specialties.some(specialty => 
-        specialty.toLowerCase().includes(searchTerm.toLowerCase())
-      ) ||
-      doctor.city.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Filtrage par région
+    if (selectedRegion) {
+      const region = cameroonRegions.find(r => r.value === selectedRegion);
+      if (region && region.cities) {
+        filtered = filtered.filter(doctor => 
+          region.cities.some(city => 
+            doctor.city.toLowerCase().includes(city.toLowerCase())
+          )
+        );
+      }
+    }
+
+    // Filtrage par ville
+    if (selectedCity) {
+      filtered = filtered.filter(doctor => 
+        doctor.city.toLowerCase().includes(selectedCity.toLowerCase())
+      );
+    }
     
     setFilteredDoctors(filtered);
     setCurrentPage(1);
+  };
+
+  const handleRegionChange = (region: string) => {
+    setSelectedRegion(region);
+    setSelectedCity(''); // Reset city when region changes
+  };
+
+  const getAvailableCities = () => {
+    if (!selectedRegion) return [];
+    const region = cameroonRegions.find(r => r.value === selectedRegion);
+    return region?.cities || [];
   };
 
   const handleBookAppointment = (doctor: Doctor) => {
@@ -157,7 +203,7 @@ const DoctorsList: React.FC = () => {
         <div className="space-y-2">
           <div className="flex items-center text-sm text-muted-foreground">
             <MapPin className="h-4 w-4 mr-2" />
-            {doctor.medicalCenter}
+            {doctor.medicalCenter}, {doctor.city}
           </div>
           
           <div className="flex items-center text-sm text-muted-foreground">
@@ -214,7 +260,7 @@ const DoctorsList: React.FC = () => {
               <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
                 <span className="flex items-center">
                   <MapPin className="h-4 w-4 mr-1" />
-                  {doctor.medicalCenter}
+                  {doctor.medicalCenter}, {doctor.city}
                 </span>
                 <span className="flex items-center">
                   <Award className="h-4 w-4 mr-1" />
@@ -266,18 +312,49 @@ const DoctorsList: React.FC = () => {
         <p className="text-muted-foreground">Consultez nos cardiologues partenaires et prenez rendez-vous</p>
       </div>
 
-      {/* Barre de recherche et contrôles */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-        <div className="relative flex-1 max-w-md">
+      {/* Filtres et contrôles */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        {/* Recherche */}
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
-            placeholder="Rechercher un médecin, spécialité, ville..."
+            placeholder="Rechercher un médecin..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
           />
         </div>
         
+        {/* Filtre par région */}
+        <Select value={selectedRegion} onValueChange={handleRegionChange}>
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionner une région" />
+          </SelectTrigger>
+          <SelectContent>
+            {cameroonRegions.map((region) => (
+              <SelectItem key={region.value} value={region.value}>
+                {region.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Filtre par ville */}
+        <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedRegion}>
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionner une ville" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">Toutes les villes</SelectItem>
+            {getAvailableCities().map((city) => (
+              <SelectItem key={city} value={city.toLowerCase()}>
+                {city}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        
+        {/* Mode d'affichage */}
         <div className="flex items-center gap-2">
           <Button
             variant={viewMode === 'grid' ? 'default' : 'outline'}
@@ -300,6 +377,8 @@ const DoctorsList: React.FC = () => {
       <div className="text-sm text-muted-foreground">
         {filteredDoctors.length} médecin(s) trouvé(s)
         {searchTerm && ` pour "${searchTerm}"`}
+        {selectedRegion && ` dans la région ${cameroonRegions.find(r => r.value === selectedRegion)?.name}`}
+        {selectedCity && ` à ${selectedCity}`}
       </div>
 
       {/* Liste des médecins */}
@@ -309,10 +388,7 @@ const DoctorsList: React.FC = () => {
             <User className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-lg font-medium mb-2">Aucun médecin trouvé</h3>
             <p className="text-muted-foreground">
-              {searchTerm 
-                ? "Essayez avec d'autres termes de recherche"
-                : "Aucun médecin disponible pour le moment"
-              }
+              Essayez de modifier vos critères de recherche
             </p>
           </CardContent>
         </Card>
