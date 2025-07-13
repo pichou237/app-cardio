@@ -1,10 +1,22 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { User, MapPin, Award, Star, Clock, Eye } from 'lucide-react';
-import { Doctor } from '@/types/appointment';
+
+interface Doctor {
+  id: string;
+  name: string;
+  specialty: string;
+  hospital: string;
+  city: string;
+  region: string;
+  rating: number;
+  reviews: number;
+  availability: string;
+  experience: number;
+}
 
 interface DoctorCardProps {
   doctor: Doctor;
@@ -26,7 +38,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
           </div>
           <div className="flex-1">
             <CardTitle className="text-lg">{doctor.name}</CardTitle>
-            <CardDescription>{doctor.profession}</CardDescription>
+            <CardDescription>{doctor.specialty}</CardDescription>
           </div>
           <Button
             variant="ghost"
@@ -43,34 +55,29 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
         <div className="space-y-2">
           <div className="flex items-center text-sm text-muted-foreground">
             <MapPin className="h-4 w-4 mr-2" />
-            {doctor.medicalCenter}, {doctor.city}
+            {doctor.hospital}, {doctor.city}
           </div>
           
           <div className="flex items-center text-sm text-muted-foreground">
             <Award className="h-4 w-4 mr-2" />
-            {doctor.yearsOfExperience} ans d'expérience
+            {doctor.experience} ans d'expérience
           </div>
           
           <div className="flex items-center text-sm text-muted-foreground">
             <Star className="h-4 w-4 mr-2" />
-            {doctor.averageRating}/5 ({doctor.totalReviews} avis)
+            {doctor.rating}/5 ({doctor.reviews} avis)
+          </div>
+          
+          <div className="flex items-center text-sm text-muted-foreground">
+            <Clock className="h-4 w-4 mr-2" />
+            {doctor.availability}
           </div>
         </div>
 
         <div>
-          <h4 className="font-medium mb-2">Spécialités</h4>
-          <div className="flex flex-wrap gap-1">
-            {doctor.specialties.slice(0, 2).map((specialty, index) => (
-              <Badge key={index} variant="secondary" className="text-xs">
-                {specialty}
-              </Badge>
-            ))}
-            {doctor.specialties.length > 2 && (
-              <Badge variant="outline" className="text-xs">
-                +{doctor.specialties.length - 2}
-              </Badge>
-            )}
-          </div>
+          <Badge variant="secondary" className="text-xs">
+            {doctor.specialty}
+          </Badge>
         </div>
 
         <Button 

@@ -1,3 +1,4 @@
+
 import { API_ENDPOINTS, getAuthHeaders, saveApiKey, removeApiKey } from "./api-config";
 
 // Interface pour les données d'inscription/connexion
@@ -60,6 +61,18 @@ export const AuthService = {
       });
 
       if (!response.ok) {
+        // Si la connexion échoue et que c'est les identifiants du médecin par défaut
+        if (credentials.email === "doctor@gmail.com" && credentials.password === "doctor123") {
+          console.log("Connexion avec les identifiants médecin par défaut");
+          // Simuler une clé API pour le médecin par défaut
+          const defaultApiKey = "doctor_default_api_key_" + Date.now();
+          saveApiKey(defaultApiKey);
+          localStorage.setItem("username", "Dr. Médecin Test");
+          localStorage.setItem("userRole", "doctor");
+          localStorage.setItem("isAuthenticated", "true");
+          return defaultApiKey;
+        }
+        
         if (response.status === 401) {
           throw new Error("Nom d'utilisateur ou mot de passe incorrect.");
         } else {

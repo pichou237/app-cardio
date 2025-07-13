@@ -4,7 +4,19 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { User, MapPin, Award, Star, Clock, Eye } from 'lucide-react';
-import { Doctor } from '@/types/appointment';
+
+interface Doctor {
+  id: string;
+  name: string;
+  specialty: string;
+  hospital: string;
+  city: string;
+  region: string;
+  rating: number;
+  reviews: number;
+  availability: string;
+  experience: number;
+}
 
 interface DoctorListItemProps {
   doctor: Doctor;
@@ -28,33 +40,25 @@ const DoctorListItem: React.FC<DoctorListItemProps> = ({
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="text-lg font-semibold">{doctor.name}</h3>
-                <Badge variant="secondary">{doctor.profession}</Badge>
+                <Badge variant="secondary">{doctor.specialty}</Badge>
               </div>
               <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
                 <span className="flex items-center">
                   <MapPin className="h-4 w-4 mr-1" />
-                  {doctor.medicalCenter}, {doctor.city}
+                  {doctor.hospital}, {doctor.city}
                 </span>
                 <span className="flex items-center">
                   <Award className="h-4 w-4 mr-1" />
-                  {doctor.yearsOfExperience} ans
+                  {doctor.experience} ans
                 </span>
                 <span className="flex items-center">
                   <Star className="h-4 w-4 mr-1" />
-                  {doctor.averageRating}/5
+                  {doctor.rating}/5
                 </span>
               </div>
-              <div className="flex flex-wrap gap-1">
-                {doctor.specialties.slice(0, 3).map((specialty, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
-                    {specialty}
-                  </Badge>
-                ))}
-                {doctor.specialties.length > 3 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{doctor.specialties.length - 3}
-                  </Badge>
-                )}
+              <div className="flex items-center text-sm text-muted-foreground">
+                <Clock className="h-4 w-4 mr-1" />
+                {doctor.availability}
               </div>
             </div>
           </div>
