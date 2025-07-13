@@ -1,92 +1,147 @@
 
 export interface Message {
   id: string;
-  content: string;
-  role: 'user' | 'assistant';
+  text: string;
+  isBot: boolean;
   timestamp: Date;
 }
 
-export interface KnowledgeItem {
-  question: string;
-  answer: string;
+export interface HealthKnowledgeItem {
   keywords: string[];
+  response: string;
   category: string;
 }
 
-export const knowledgeBase: KnowledgeItem[] = [
-  // Prévention des maladies cardiaques
+export const healthKnowledgeBase: HealthKnowledgeItem[] = [
+  // Prévention et facteurs de risque
   {
-    question: "Comment prévenir les maladies cardiaques ?",
-    answer: "Pour prévenir les maladies cardiaques : adoptez une alimentation équilibrée riche en fruits et légumes, pratiquez une activité physique régulière (30 min/jour), évitez le tabac et l'excès d'alcool, gérez votre stress, maintenez un poids santé, et faites des contrôles médicaux réguliers.",
-    keywords: ["prévention", "prévenir", "éviter", "protection"],
+    keywords: ["prévention", "prévenir", "éviter", "facteurs de risque", "comment éviter"],
+    response: "Pour prévenir les maladies cardiaques : 1) Adoptez une alimentation équilibrée pauvre en sel et en graisses saturées 2) Pratiquez une activité physique régulière (30 min/jour) 3) Arrêtez le tabac 4) Limitez l'alcool 5) Gérez votre stress 6) Surveillez votre tension artérielle, cholestérol et glycémie.",
     category: "prévention"
   },
+  
+  // Symptômes
   {
-    question: "Quels aliments sont bons pour le cœur ?",
-    answer: "Les aliments bons pour le cœur incluent : les poissons gras (saumon, sardines), les fruits et légumes frais, les noix et graines, l'huile d'olive, les légumineuses, l'avoine, et les fruits rouges. Évitez les aliments transformés, trop salés ou sucrés.",
-    keywords: ["alimentation", "nourriture", "manger", "régime", "aliments"],
-    category: "nutrition"
+    keywords: ["symptômes", "signes", "douleur poitrine", "essoufflement", "fatigue", "palpitations"],
+    response: "Les symptômes d'alerte cardiaque incluent : douleur thoracique, essoufflement inhabituel, fatigue extrême, palpitations, nausées, sueurs froides, douleur irradiant vers le bras gauche, la mâchoire ou le dos. En cas de symptômes aigus, consultez immédiatement les urgences.",
+    category: "symptômes"
   },
   
-  // Symptômes et signes d'alerte
+  // Hypertension
   {
-    question: "Quels sont les symptômes d'une crise cardiaque ?",
-    answer: "Les symptômes d'une crise cardiaque incluent : douleur thoracique intense, essoufflement, nausées, transpiration excessive, douleur irradiant vers le bras gauche, la mâchoire ou le dos. En cas de doute, appelez immédiatement les secours (15 ou 112).",
-    keywords: ["symptômes", "crise cardiaque", "infarctus", "douleur", "urgence"],
-    category: "urgence"
+    keywords: ["hypertension", "tension artérielle", "tension élevée", "hta"],
+    response: "L'hypertension artérielle est un facteur majeur de risque cardiovasculaire au Cameroun. Elle est souvent silencieuse. Valeurs normales : <120/80 mmHg. Surveillance régulière recommandée, surtout après 40 ans. Traitement par modification du mode de vie et/ou médicaments.",
+    category: "conditions"
   },
+  
+  // Diabète
   {
-    question: "Comment reconnaître l'hypertension ?",
-    answer: "L'hypertension est souvent silencieuse. Symptômes possibles : maux de tête fréquents, vertiges, fatigue, vision floue, saignements de nez. Une tension normale est inférieure à 140/90 mmHg. Faites-vous contrôler régulièrement.",
-    keywords: ["hypertension", "tension", "pression artérielle"],
-    category: "diagnostic"
+    keywords: ["diabète", "glycémie", "sucre", "insuline"],
+    response: "Le diabète augmente considérablement le risque de maladies cardiaques. Contrôlez votre glycémie, suivez votre traitement, adoptez une alimentation adaptée et pratiquez une activité physique régulière. Objectif : HbA1c < 7%.",
+    category: "conditions"
   },
-
-  // Facteurs de risque
+  
+  // Cholestérol
   {
-    question: "Quels sont les facteurs de risque cardiovasculaire ?",
-    answer: "Les principaux facteurs de risque sont : l'âge, le sexe masculin, les antécédents familiaux, le tabagisme, l'hypertension, le diabète, l'obésité, la sédentarité, le stress chronique, et un taux de cholestérol élevé.",
-    keywords: ["facteurs de risque", "risque", "cardiovasculaire"],
-    category: "risque"
+    keywords: ["cholestérol", "lipides", "graisse", "hdl", "ldl"],
+    response: "Un taux de cholestérol élevé augmente le risque cardiovasculaire. Privilégiez les graisses insaturées (poisson, huile d'olive, noix), limitez les graisses saturées et trans. Activité physique et parfois médicaments nécessaires.",
+    category: "conditions"
   },
-
-  // Traitements et médicaments
+  
+  // Alimentation
   {
-    question: "Comment traiter l'hypertension ?",
-    answer: "Le traitement de l'hypertension combine : changements de mode de vie (alimentation, exercice, réduction du sel), médicaments antihypertenseurs si nécessaire, suivi médical régulier, et gestion du stress. Ne jamais arrêter un traitement sans avis médical.",
-    keywords: ["traitement", "hypertension", "médicaments"],
-    category: "traitement"
+    keywords: ["alimentation", "régime", "nutrition", "manger", "aliments"],
+    response: "Régime cardio-protecteur : fruits et légumes (5 portions/jour), poissons gras 2x/semaine, céréales complètes, légumineuses, huile d'olive. Limitez : sel (<5g/jour), sucres ajoutés, viandes transformées, fritures.",
+    category: "lifestyle"
   },
-
+  
   // Activité physique
   {
-    question: "Quel sport pratiquer pour le cœur ?",
-    answer: "Les meilleurs sports pour le cœur sont : la marche rapide, la course à pied, la natation, le vélo, la danse. Commencez progressivement, 30 minutes d'activité modérée 5 fois par semaine. Consultez votre médecin avant de débuter.",
-    keywords: ["sport", "exercice", "activité physique", "cardio"],
-    category: "exercice"
+    keywords: ["sport", "exercice", "activité physique", "marche", "course"],
+    response: "L'activité physique renforce le cœur : 150 min d'activité modérée/semaine ou 75 min d'activité intense. Commencez progressivement : marche rapide, natation, vélo. Consultez avant de commencer si vous avez des problèmes cardiaques.",
+    category: "lifestyle"
   },
-
-  // Stress et santé mentale
+  
+  // Tabac
   {
-    question: "Le stress peut-il causer des problèmes cardiaques ?",
-    answer: "Oui, le stress chronique augmente le risque cardiovasculaire en élevant la pression artérielle, en favorisant l'inflammation et les comportements à risque. Techniques de gestion : relaxation, méditation, exercice, sommeil suffisant.",
-    keywords: ["stress", "anxiété", "mental", "émotions"],
-    category: "bien-être"
+    keywords: ["tabac", "cigarette", "fumer", "arrêter fumer"],
+    response: "Le tabac multiplie par 2-3 le risque cardiovasculaire. Arrêter réduit immédiatement ce risque. Bénéfices : amélioration de la circulation en 2-12 semaines, risque d'infarctus divisé par 2 en 1 an. Aide disponible : substituts nicotiniques, accompagnement médical.",
+    category: "lifestyle"
   },
-
-  // Questions spécifiques au Cameroun
+  
+  // Stress
   {
-    question: "Quelles sont les principales causes de maladies cardiaques au Cameroun ?",
-    answer: "Au Cameroun, les principales causes sont : l'hypertension artérielle (très fréquente), le changement des habitudes alimentaires vers une alimentation plus riche, la sédentarité croissante en milieu urbain, le diabète en augmentation, et parfois des facteurs génétiques.",
-    keywords: ["Cameroun", "Afrique", "causes", "épidémiologie"],
-    category: "contexte-local"
+    keywords: ["stress", "anxiété", "tension", "nervosité", "relaxation"],
+    response: "Le stress chronique augmente le risque cardiovasculaire. Techniques de gestion : relaxation, méditation, yoga, activité physique, sommeil suffisant (7-8h), organisation du temps, soutien social. N'hésitez pas à consulter si nécessaire.",
+    category: "lifestyle"
   },
-
-  // Informations générales
+  
+  // Urgences
   {
-    question: "Qu'est-ce que CardioPredict ?",
-    answer: "CardioPredict est une plateforme d'intelligence artificielle qui évalue votre risque de maladie cardiaque. Elle analyse vos données médicales pour fournir une prédiction personnalisée et des recommandations de prévention adaptées au contexte camerounais.",
-    keywords: ["CardioPredict", "plateforme", "IA", "prédiction"],
-    category: "plateforme"
+    keywords: ["urgence", "infarctus", "crise cardiaque", "appeler", "secours"],
+    response: "URGENCE CARDIAQUE - Appelez immédiatement le 115 (SAMU) si : douleur thoracique intense persistante, essoufflement sévère, perte de connaissance, sueurs froides avec malaise. En attendant : position demi-assise, desserrer vêtements, rassurer la personne.",
+    category: "urgence"
+  },
+  
+  // Examens
+  {
+    keywords: ["examens", "tests", "électrocardiogramme", "ecg", "échographie", "bilan"],
+    response: "Examens cardiaques courants : ECG (activité électrique), échocardiographie (structure et fonction), test d'effort, holter ECG (24h), bilan sanguin (cholestérol, glycémie, troponines). Fréquence selon âge et facteurs de risque.",
+    category: "examens"
+  },
+  
+  // Médicaments
+  {
+    keywords: ["médicaments", "traitement", "pilules", "aspirine", "statines"],
+    response: "Médicaments cardiaques courants : antihypertenseurs, statines (cholestérol), antiplaquettaires (aspirine), bêta-bloquants. Respectez les prescriptions, ne jamais arrêter brutalement, signalez les effets secondaires à votre médecin.",
+    category: "traitement"
+  },
+  
+  // Âge et genre
+  {
+    keywords: ["âge", "femme", "homme", "ménopause", "vieillissement"],
+    response: "Risque cardiovasculaire augmente avec l'âge. Hommes : risque plus précoce (45 ans). Femmes : protection hormonale jusqu'à la ménopause, puis rattrapage rapide. Surveillance renforcée après 50 ans pour tous.",
+    category: "démographie"
+  },
+  
+  // Hérédité
+  {
+    keywords: ["hérédité", "famille", "génétique", "antécédents familiaux"],
+    response: "Antécédents familiaux importants : infarctus ou mort subite chez parent du 1er degré avant 55 ans (homme) ou 65 ans (femme). Surveillance précoce recommandée, dépistage génétique parfois utile.",
+    category: "hérédité"
+  },
+  
+  // Sommeil
+  {
+    keywords: ["sommeil", "dormir", "insomnie", "apnée"],
+    response: "Un bon sommeil (7-8h) protège le cœur. L'apnée du sommeil augmente le risque cardiovasculaire. Signes : ronflements, pauses respiratoires, fatigue matinale. Consultez si suspicion d'apnée du sommeil.",
+    category: "lifestyle"
+  },
+  
+  // Cameroun spécifique
+  {
+    keywords: ["cameroun", "afrique", "tropical", "paludisme", "climat"],
+    response: "Au Cameroun, vigilance particulière pour : hypertension (très fréquente), diabète en augmentation, infections qui peuvent affecter le cœur. Adaptation aux conditions climatiques, hydratation importante, protection contre le paludisme.",
+    category: "contexte local"
+  },
+  
+  // Salutations et politesse
+  {
+    keywords: ["bonjour", "salut", "bonsoir", "hello", "hey"],
+    response: "Bonjour ! Je suis votre assistant santé cardiaque. Je peux vous aider avec des informations sur la prévention des maladies cardiaques, les symptômes à surveiller, et les bonnes habitudes à adopter. Comment puis-je vous aider aujourd'hui ?",
+    category: "salutation"
+  },
+  
+  {
+    keywords: ["merci", "thanks", "au revoir", "bye"],
+    response: "Je vous en prie ! N'hésitez pas à revenir si vous avez d'autres questions sur la santé cardiaque. Prenez soin de votre cœur ! 💝",
+    category: "politesse"
+  },
+  
+  // Questions sur l'outil
+  {
+    keywords: ["cardiopredict", "outil", "intelligence artificielle", "ai", "prédiction"],
+    response: "CardioPredict est un outil d'aide à l'évaluation du risque cardiovasculaire utilisant l'intelligence artificielle. Il analyse vos données de santé pour estimer votre risque et propose des recommandations personnalisées. Cet outil complète mais ne remplace pas l'avis médical.",
+    category: "outil"
   }
 ];

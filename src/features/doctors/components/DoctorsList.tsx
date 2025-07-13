@@ -1,285 +1,303 @@
-import React, { useState, useMemo } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Star, Clock, Grid, List, ChevronLeft, ChevronRight, User } from "lucide-react";
-import DoctorDetailsModal from './DoctorDetailsModal';
+
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar, Clock, MapPin, Phone, Mail, User, Award, Search, Grid3X3, List, Eye, GraduationCap, Languages, Building2, CreditCard, Star } from 'lucide-react';
+import { Doctor } from '@/types/appointment';
+import { AppointmentService } from '@/services/appointment-service';
 import BookingModal from './BookingModal';
-
-interface Doctor {
-  id: string;
-  name: string;
-  specialty: string;
-  hospital: string;
-  city: string;
-  region: string;
-  rating: number;
-  reviews: number;
-  availability: string;
-  experience: number;
-}
-
-const mockDoctors: Doctor[] = [
-  {
-    id: "1",
-    name: "Dr. Marie Ngo Bell",
-    specialty: "Cardiologue",
-    hospital: "Hôpital Général de Douala",
-    city: "Douala",
-    region: "Littoral",
-    rating: 4.8,
-    reviews: 120,
-    availability: "Lun-Ven, 8h-17h",
-    experience: 15
-  },
-  {
-    id: "2",
-    name: "Dr. Paul Mbarga Essomba",
-    specialty: "Cardiologue Interventionnel",
-    hospital: "Centre Hospitalier d'Essos",
-    city: "Yaoundé",
-    region: "Centre",
-    rating: 4.5,
-    reviews: 95,
-    availability: "Mar-Sam, 9h-16h",
-    experience: 20
-  },
-  {
-    id: "3",
-    name: "Dr. Aminata Oumarou",
-    specialty: "Médecin Interniste",
-    hospital: "Hôpital Régional de Garoua",
-    city: "Garoua",
-    region: "Nord",
-    rating: 4.2,
-    reviews: 78,
-    availability: "Lun-Mer, 10h-15h",
-    experience: 12
-  },
-  {
-    id: "4",
-    name: "Dr. Sylvie Kamga",
-    specialty: "Médecin généraliste",
-    hospital: "Centre Médical de Bonamoussadi",
-    city: "Douala",
-    region: "Littoral",
-    rating: 4.9,
-    reviews: 150,
-    availability: "Lun-Ven, 9h-18h",
-    experience: 10
-  },
-  {
-    id: "5",
-    name: "Dr. Jean-Pierre Fotsing",
-    specialty: "Cardiologue",
-    hospital: "Polyclinique de l'Avenue Kennedy",
-    city: "Yaoundé",
-    region: "Centre",
-    rating: 4.6,
-    reviews: 110,
-    availability: "Mar-Jeu, 8h-16h",
-    experience: 18
-  },
-  {
-    id: "6",
-    name: "Dr. Aissatou Mbaye",
-    specialty: "Médecin généraliste",
-    hospital: "Centre de Santé Intégré de Maroua",
-    city: "Maroua",
-    region: "Extrême-Nord",
-    rating: 4.3,
-    reviews: 85,
-    availability: "Lun-Ven, 7h-14h",
-    experience: 9
-  },
-  {
-    id: "7",
-    name: "Dr. Luc Owona",
-    specialty: "Cardiologue interventionnel",
-    hospital: "Hôpital Catholique de Bangangté",
-    city: "Bangangté",
-    region: "Ouest",
-    rating: 4.7,
-    reviews: 130,
-    availability: "Mer-Ven, 10h-17h",
-    experience: 14
-  },
-  {
-    id: "8",
-    name: "Dr. Estelle Nomo",
-    specialty: "Interniste",
-    hospital: "Clinique du Plateau",
-    city: "Yaoundé",
-    region: "Centre",
-    rating: 4.4,
-    reviews: 100,
-    availability: "Lun-Sam, 9h-15h",
-    experience: 11
-  },
-  {
-    id: "9",
-    name: "Dr. Idriss Yaya",
-    specialty: "Médecin généraliste",
-    hospital: "Centre de Santé de Kousseri",
-    city: "Kousseri",
-    region: "Extrême-Nord",
-    rating: 4.1,
-    reviews: 70,
-    availability: "Lun-Jeu, 8h-13h",
-    experience: 8
-  }
-];
+import DoctorDetailsModal from './DoctorDetailsModal';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const cameroonRegions = [
-  {
-    name: "Adamaoua",
-    cities: ["Ngaoundéré", "Tibati", "Meiganga"]
-  },
-  {
-    name: "Centre",
-    cities: ["Yaoundé", "Bafia", "Mbalmayo"]
-  },
-  {
-    name: "Est",
-    cities: ["Bertoua", "Batouri", "Yokadouma"]
-  },
-  {
-    name: "Extrême-Nord",
-    cities: ["Maroua", "Kousseri", "Mora"]
-  },
-  {
-    name: "Littoral",
-    cities: ["Douala", "Edéa", "Nkongsamba"]
-  },
-  {
-    name: "Nord",
-    cities: ["Garoua", "Poli", "Touboro"]
-  },
-  {
-    name: "Nord-Ouest",
-    cities: ["Bamenda", "Wum", "Kumbo"]
-  },
-  {
-    name: "Ouest",
-    cities: ["Bafoussam", "Dschang", "Bangangté"]
-  },
-  {
-    name: "Sud",
-    cities: ["Ebolowa", "Kribi", "Sangmélima"]
-  },
-  {
-    name: "Sud-Ouest",
-    cities: ["Buéa", "Limbe", "Kumba"]
-  }
+  { name: 'Toutes les régions', value: '' },
+  { name: 'Centre', value: 'centre', cities: ['Yaoundé', 'Mbalmayo', 'Obala', 'Monatélé'] },
+  { name: 'Littoral', value: 'littoral', cities: ['Douala', 'Edéa', 'Nkongsamba', 'Kribi'] },
+  { name: 'Ouest', value: 'ouest', cities: ['Bafoussam', 'Dschang', 'Mbouda', 'Bandjoun'] },
+  { name: 'Nord-Ouest', value: 'nord-ouest', cities: ['Bamenda', 'Kumbo', 'Wum', 'Ndop'] },
+  { name: 'Sud-Ouest', value: 'sud-ouest', cities: ['Buea', 'Limbe', 'Kumba', 'Mamfe'] },
+  { name: 'Sud', value: 'sud', cities: ['Ebolowa', 'Sangmélima', 'Ambam', 'Djoum'] },
+  { name: 'Est', value: 'est', cities: ['Bertoua', 'Batouri', 'Yokadouma', 'Abong-Mbang'] },
+  { name: 'Adamaoua', value: 'adamaoua', cities: ['Ngaoundéré', 'Tibati', 'Tignère', 'Banyo'] },
+  { name: 'Nord', value: 'nord', cities: ['Garoua', 'Maroua', 'Guidiguis', 'Yagoua'] },
+  { name: 'Extrême-Nord', value: 'extreme-nord', cities: ['Maroua', 'Mokolo', 'Kousséri', 'Yagoua'] }
 ];
 
 const DoctorsList: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRegion, setSelectedRegion] = useState("all");
-  const [selectedCity, setSelectedCity] = useState("all");
-  const [selectedSpecialty, setSelectedSpecialty] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [bookingDoctor, setBookingDoctor] = useState<Doctor | null>(null);
-  const doctorsPerPage = 6;
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
-  const filteredDoctors = useMemo(() => {
-    return mockDoctors.filter(doctor => {
-      const matchesSearch = doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          doctor.hospital.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesRegion = selectedRegion === "all" || doctor.region === selectedRegion;
-      const matchesCity = selectedCity === "all" || doctor.city === selectedCity;
-      const matchesSpecialty = selectedSpecialty === "all" || doctor.specialty === selectedSpecialty;
-      
-      return matchesSearch && matchesRegion && matchesCity && matchesSpecialty;
-    });
-  }, [searchTerm, selectedRegion, selectedCity, selectedSpecialty]);
+  useEffect(() => {
+    loadDoctors();
+  }, []);
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredDoctors.length / doctorsPerPage);
-  const startIndex = (currentPage - 1) * doctorsPerPage;
-  const endIndex = startIndex + doctorsPerPage;
-  const currentDoctors = filteredDoctors.slice(startIndex, endIndex);
+  useEffect(() => {
+    filterDoctors();
+  }, [searchTerm, selectedRegion, selectedCity, doctors]);
+
+  const loadDoctors = async () => {
+    try {
+      const doctorsList = await AppointmentService.getDoctors();
+      setDoctors(doctorsList);
+      setFilteredDoctors(doctorsList);
+    } catch (error) {
+      console.error('Erreur lors du chargement des médecins:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterDoctors = () => {
+    let filtered = doctors;
+
+    // Filtrage par terme de recherche
+    if (searchTerm) {
+      filtered = filtered.filter(doctor => 
+        doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doctor.profession.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doctor.medicalCenter.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doctor.specialties.some(specialty => 
+          specialty.toLowerCase().includes(searchTerm.toLowerCase())
+        ) ||
+        doctor.city.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filtrage par région
+    if (selectedRegion) {
+      const region = cameroonRegions.find(r => r.value === selectedRegion);
+      if (region && region.cities) {
+        filtered = filtered.filter(doctor => 
+          region.cities.some(city => 
+            doctor.city.toLowerCase().includes(city.toLowerCase())
+          )
+        );
+      }
+    }
+
+    // Filtrage par ville
+    if (selectedCity) {
+      filtered = filtered.filter(doctor => 
+        doctor.city.toLowerCase().includes(selectedCity.toLowerCase())
+      );
+    }
+    
+    setFilteredDoctors(filtered);
+    setCurrentPage(1);
+  };
+
+  const handleRegionChange = (region: string) => {
+    setSelectedRegion(region);
+    setSelectedCity(''); // Reset city when region changes
+  };
+
+  const getAvailableCities = () => {
+    if (!selectedRegion) return [];
+    const region = cameroonRegions.find(r => r.value === selectedRegion);
+    return region?.cities || [];
+  };
 
   const handleBookAppointment = (doctor: Doctor) => {
-    setBookingDoctor(doctor);
+    setSelectedDoctor(doctor);
     setShowBookingModal(true);
   };
 
   const handleViewDetails = (doctor: Doctor) => {
     setSelectedDoctor(doctor);
+    setShowDetailsModal(true);
   };
 
-  const DoctorCard: React.FC<{ doctor: Doctor }> = ({ doctor }) => (
-    <Card className="bg-white shadow-md rounded-lg overflow-hidden">
-      <div className="relative">
-        <div className="w-full h-48 bg-primary/10 flex items-center justify-center">
-          <User className="h-16 w-16 text-primary" />
-        </div>
-        <div className="absolute top-2 right-2">
-          <Badge variant="secondary">
-            <Star className="h-3 w-3 mr-1 inline-block" />
-            {doctor.rating} ({doctor.reviews})
-          </Badge>
-        </div>
+  // Pagination
+  const totalPages = Math.ceil(filteredDoctors.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentDoctors = filteredDoctors.slice(startIndex, endIndex);
+
+  const generatePaginationItems = () => {
+    const items = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        items.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) {
+          items.push(i);
+        }
+        items.push('ellipsis');
+        items.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        items.push(1);
+        items.push('ellipsis');
+        for (let i = totalPages - 3; i <= totalPages; i++) {
+          items.push(i);
+        }
+      } else {
+        items.push(1);
+        items.push('ellipsis');
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          items.push(i);
+        }
+        items.push('ellipsis');
+        items.push(totalPages);
+      }
+    }
+    
+    return items;
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-lg">Chargement des médecins partenaires...</div>
       </div>
-      <CardContent className="p-4">
-        <CardTitle className="text-lg font-semibold">{doctor.name}</CardTitle>
-        <CardDescription className="text-gray-500">
-          {doctor.specialty}
-        </CardDescription>
-        <div className="flex items-center mt-2 text-gray-600">
-          <MapPin className="h-4 w-4 mr-1" />
-          {doctor.hospital}, {doctor.city}
+    );
+  }
+
+  const DoctorCard = ({ doctor }: { doctor: Doctor }) => (
+    <Card className="hover:shadow-lg transition-shadow">
+      <CardHeader>
+        <div className="flex items-center space-x-3">
+          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+            <User className="h-6 w-6 text-primary" />
+          </div>
+          <div className="flex-1">
+            <CardTitle className="text-lg">{doctor.name}</CardTitle>
+            <CardDescription>{doctor.profession}</CardDescription>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleViewDetails(doctor)}
+            className="text-primary hover:text-primary/80"
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
         </div>
-        <div className="flex items-center mt-1 text-gray-600">
-          <Clock className="h-4 w-4 mr-1" />
-          {doctor.availability}
+      </CardHeader>
+      
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <div className="flex items-center text-sm text-muted-foreground">
+            <MapPin className="h-4 w-4 mr-2" />
+            {doctor.medicalCenter}, {doctor.city}
+          </div>
+          
+          <div className="flex items-center text-sm text-muted-foreground">
+            <Award className="h-4 w-4 mr-2" />
+            {doctor.yearsOfExperience} ans d'expérience
+          </div>
+          
+          <div className="flex items-center text-sm text-muted-foreground">
+            <Star className="h-4 w-4 mr-2" />
+            {doctor.averageRating}/5 ({doctor.totalReviews} avis)
+          </div>
         </div>
+
+        <div>
+          <h4 className="font-medium mb-2">Spécialités</h4>
+          <div className="flex flex-wrap gap-1">
+            {doctor.specialties.slice(0, 2).map((specialty, index) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {specialty}
+              </Badge>
+            ))}
+            {doctor.specialties.length > 2 && (
+              <Badge variant="outline" className="text-xs">
+                +{doctor.specialties.length - 2}
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        <Button 
+          onClick={() => handleBookAppointment(doctor)} 
+          className="w-full"
+        >
+          <Clock className="h-4 w-4 mr-2" />
+          Prendre rendez-vous
+        </Button>
       </CardContent>
-      <div className="flex justify-between p-4 border-t border-gray-200">
-        <Button variant="outline" size="sm" onClick={() => handleViewDetails(doctor)}>
-          Voir Détails
-        </Button>
-        <Button size="sm" onClick={() => handleBookAppointment(doctor)}>
-          Prendre RDV
-        </Button>
-      </div>
     </Card>
   );
 
-  const DoctorListItem: React.FC<{ doctor: Doctor }> = ({ doctor }) => (
-    <Card className="bg-white shadow-md rounded-lg overflow-hidden">
-      <CardContent className="grid grid-cols-3 gap-4 p-4">
-        <div className="col-span-1">
-          <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center">
-            <User className="h-8 w-8 text-primary" />
+  const DoctorListItem = ({ doctor }: { doctor: Doctor }) => (
+    <Card className="hover:shadow-lg transition-shadow">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+              <User className="h-6 w-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-lg font-semibold">{doctor.name}</h3>
+                <Badge variant="secondary">{doctor.profession}</Badge>
+              </div>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                <span className="flex items-center">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  {doctor.medicalCenter}, {doctor.city}
+                </span>
+                <span className="flex items-center">
+                  <Award className="h-4 w-4 mr-1" />
+                  {doctor.yearsOfExperience} ans
+                </span>
+                <span className="flex items-center">
+                  <Star className="h-4 w-4 mr-1" />
+                  {doctor.averageRating}/5
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {doctor.specialties.slice(0, 3).map((specialty, index) => (
+                  <Badge key={index} variant="outline" className="text-xs">
+                    {specialty}
+                  </Badge>
+                ))}
+                {doctor.specialties.length > 3 && (
+                  <Badge variant="outline" className="text-xs">
+                    +{doctor.specialties.length - 3}
+                  </Badge>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="col-span-2">
-          <CardTitle className="text-lg font-semibold">{doctor.name}</CardTitle>
-          <CardDescription className="text-gray-500">
-            {doctor.specialty} - {doctor.hospital}, {doctor.city}
-          </CardDescription>
-          <div className="flex items-center mt-2 text-gray-600">
-            <Star className="h-4 w-4 mr-1" />
-            {doctor.rating} ({doctor.reviews} avis)
-          </div>
-          <div className="flex items-center mt-1 text-gray-600">
-            <Clock className="h-4 w-4 mr-1" />
-            Disponibilité: {doctor.availability}
-          </div>
-          <div className="mt-4 flex justify-end gap-2">
-            <Button variant="outline" size="sm" onClick={() => handleViewDetails(doctor)}>
-              Voir Détails
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleViewDetails(doctor)}
+              className="text-primary hover:text-primary/80"
+            >
+              <Eye className="h-4 w-4 mr-1" />
+              Détails
             </Button>
-            <Button size="sm" onClick={() => handleBookAppointment(doctor)}>
-              Prendre RDV
+            <Button onClick={() => handleBookAppointment(doctor)}>
+              <Clock className="h-4 w-4 mr-2" />
+              Rendez-vous
             </Button>
           </div>
         </div>
@@ -289,115 +307,94 @@ const DoctorsList: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Search and Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Trouver un médecin</CardTitle>
-          <CardDescription>
-            Recherchez parmi {mockDoctors.length} médecins disponibles au Cameroun
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <Input
-              placeholder="Rechercher par nom, spécialité, hôpital..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-            />
-            
-            <Select value={selectedRegion} onValueChange={(value) => {
-              setSelectedRegion(value);
-              setSelectedCity("all");
-              setCurrentPage(1);
-            }}>
-              <SelectTrigger>
-                <SelectValue placeholder="Toutes les régions" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes les régions</SelectItem>
-                {cameroonRegions.map(region => (
-                  <SelectItem key={region.name} value={region.name}>
-                    {region.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <div>
+        <h2 className="text-2xl font-bold mb-2">Médecins Partenaires</h2>
+        <p className="text-muted-foreground">Consultez nos cardiologues partenaires et prenez rendez-vous</p>
+      </div>
 
-            <Select value={selectedCity} onValueChange={(value) => {
-              setSelectedCity(value);
-              setCurrentPage(1);
-            }}>
-              <SelectTrigger>
-                <SelectValue placeholder="Toutes les villes" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes les villes</SelectItem>
-                {selectedRegion !== "all" && 
-                  cameroonRegions
-                    .find(r => r.name === selectedRegion)
-                    ?.cities.map(city => (
-                      <SelectItem key={city} value={city}>
-                        {city}
-                      </SelectItem>
-                    ))
-                }
-              </SelectContent>
-            </Select>
+      {/* Filtres et contrôles */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        {/* Recherche */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Rechercher un médecin..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        
+        {/* Filtre par région */}
+        <Select value={selectedRegion} onValueChange={handleRegionChange}>
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionner une région" />
+          </SelectTrigger>
+          <SelectContent>
+            {cameroonRegions.map((region) => (
+              <SelectItem key={region.value} value={region.value}>
+                {region.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-            <Select value={selectedSpecialty} onValueChange={(value) => {
-              setSelectedSpecialty(value);
-              setCurrentPage(1);
-            }}>
-              <SelectTrigger>
-                <SelectValue placeholder="Toutes les spécialités" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes les spécialités</SelectItem>
-                <SelectItem value="Cardiologue">Cardiologue</SelectItem>
-                <SelectItem value="Médecin généraliste">Médecin généraliste</SelectItem>
-                <SelectItem value="Interniste">Interniste</SelectItem>
-                <SelectItem value="Cardiologue interventionnel">Cardiologue interventionnel</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Filtre par ville */}
+        <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedRegion}>
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionner une ville" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">Toutes les villes</SelectItem>
+            {getAvailableCities().map((city) => (
+              <SelectItem key={city} value={city.toLowerCase()}>
+                {city}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        
+        {/* Mode d'affichage */}
+        <div className="flex items-center gap-2">
+          <Button
+            variant={viewMode === 'grid' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setViewMode('grid')}
+          >
+            <Grid3X3 className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={viewMode === 'list' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setViewMode('list')}
+          >
+            <List className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
 
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              {filteredDoctors.length} médecin(s) trouvé(s)
-            </p>
-            <div className="flex items-center gap-2">
-              <Button
-                variant={viewMode === "grid" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("grid")}
-              >
-                <Grid className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === "list" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("list")}
-              >
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Résultats */}
+      <div className="text-sm text-muted-foreground">
+        {filteredDoctors.length} médecin(s) trouvé(s)
+        {searchTerm && ` pour "${searchTerm}"`}
+        {selectedRegion && ` dans la région ${cameroonRegions.find(r => r.value === selectedRegion)?.name}`}
+        {selectedCity && ` à ${selectedCity}`}
+      </div>
 
-      {/* Results */}
+      {/* Liste des médecins */}
       {currentDoctors.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">Aucun médecin trouvé avec ces critères.</p>
+          <CardContent className="text-center py-8">
+            <User className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium mb-2">Aucun médecin trouvé</h3>
+            <p className="text-muted-foreground">
+              Essayez de modifier vos critères de recherche
+            </p>
           </CardContent>
         </Card>
       ) : (
         <>
-          {viewMode === "grid" ? (
+          {viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {currentDoctors.map((doctor) => (
                 <DoctorCard key={doctor.id} doctor={doctor} />
@@ -413,66 +410,64 @@ const DoctorsList: React.FC = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Précédent
-              </Button>
-              
-              <div className="flex items-center gap-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setCurrentPage(page)}
-                    className="w-10"
-                  >
-                    {page}
-                  </Button>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  />
+                </PaginationItem>
+                
+                {generatePaginationItems().map((item, index) => (
+                  <PaginationItem key={index}>
+                    {item === 'ellipsis' ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink
+                        onClick={() => setCurrentPage(item as number)}
+                        isActive={currentPage === item}
+                        className="cursor-pointer"
+                      >
+                        {item}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
                 ))}
-              </div>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-              >
-                Suivant
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           )}
         </>
       )}
 
-      {/* Modals */}
-      {selectedDoctor && (
-        <DoctorDetailsModal
+      {/* Modales */}
+      {showBookingModal && selectedDoctor && (
+        <BookingModal
           doctor={selectedDoctor}
-          isOpen={!!selectedDoctor}
-          onClose={() => setSelectedDoctor(null)}
-          onBookAppointment={() => {
-            setBookingDoctor(selectedDoctor);
+          onClose={() => {
+            setShowBookingModal(false);
             setSelectedDoctor(null);
-            setShowBookingModal(true);
           }}
         />
       )}
 
-      {bookingDoctor && (
-        <BookingModal
-          doctor={bookingDoctor}
-          isOpen={showBookingModal}
+      {showDetailsModal && selectedDoctor && (
+        <DoctorDetailsModal
+          doctor={selectedDoctor}
           onClose={() => {
-            setShowBookingModal(false);
-            setBookingDoctor(null);
+            setShowDetailsModal(false);
+            setSelectedDoctor(null);
+          }}
+          onBookAppointment={() => {
+            setShowDetailsModal(false);
+            setShowBookingModal(true);
           }}
         />
       )}
