@@ -38,8 +38,8 @@ const medicalOpinions: MedicalOpinion[] = [
     city: "Douala",
     opinion: "Dans notre pratique quotidienne, nous rencontrons beaucoup de patients hypertendus qui ignorent leur état. Cette hypertension non détectée est la première cause des complications cardiaques graves, notamment les infarctus et les AVC. La prévention et le dépistage précoce sont essentiels, surtout dans les milieux urbains où le stress et la sédentarité augmentent les risques",
     mainCause: "Diabète & Urbanisation",
-    // image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop&crop=face",
-    image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop&crop=face",
+    image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop&crop=face",
+    // image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop&crop=face",
     experience: 20
   },
   {
@@ -50,7 +50,7 @@ const medicalOpinions: MedicalOpinion[] = [
     city: "Yaounde",
     opinion: "Dans le Nord-Cameroun, nous observons une forte corrélation entre les maladies cardiaques et les facteurs génétiques combinés aux changements climatiques. La déshydratation chronique et les infections récurrentes fragilisent le système cardiovasculaire de nos populations.",
     mainCause: "Facteurs Génétiques & Climat",
-    image: "https://images.unsplash.com/photo-1594824278271-d0c4cce3c9c8?w=400&h=400&fit=crop&crop=face",
+    image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop&crop=face",
     experience: 12
   }
 ];
