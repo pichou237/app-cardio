@@ -25,8 +25,7 @@ const medicalOpinions: MedicalOpinion[] = [
     specialty: "spécialiste en traumatologie",
     hospital: "Hôpital  Saint jean de Dieu de Yassa",
     city: "Douala",
-    opinion: "Au Cameroun, les maladies cardiovasculaires sont souvent découvertes trop tard, faute de dépistage précoce. Les principaux facteurs de risque dans notre contexte sont l’hypertension, le diabète, le stress,l’alcool, la sédentarité et la mauvaise alimentation".
-              "Une application simple et accessible permettant aux patients d’évaluer eux-mêmes leur risque, en fonction de leurs habitudes et symptômes, serait un excellent outil de prévention et d’orientation médicale et nous permettra à nous médecins de nous alléger la tâche",
+    opinion: "Au Cameroun, les maladies cardiovasculaires sont souvent découvertes trop tard, faute de dépistage précoce. Les principaux facteurs de risque dans notre contexte sont l'hypertension, le diabète, le stress, l'alcool, la sédentarité et la mauvaise alimentation. Une application simple et accessible permettant aux patients d'évaluer eux-mêmes leur risque, en fonction de leurs habitudes et symptômes, serait un excellent outil de prévention et d'orientation médicale et nous permettra à nous médecins de nous alléger la tâche.",
     mainCause: "Hypertension & Alimentation",
     image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop&crop=face",
     experience: 15
