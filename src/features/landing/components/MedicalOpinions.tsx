@@ -34,8 +34,7 @@ const medicalOpinions: MedicalOpinion[] = [
     id: "2",
     doctorName: "Dr.  MONKAM",
     specialty: "Cardiologue Interventionnel",
-    hospital: "cabinet médical calvaincoeur 
-",
+    hospital: "cabinet médical calvaincoeur ",
     city: "Douala",
     opinion: "Dans notre pratique quotidienne, nous rencontrons beaucoup de patients hypertendus qui ignorent leur état. Cette hypertension non détectée est la première cause des complications cardiaques graves, notamment les infarctus et les AVC. La prévention et le dépistage précoce sont essentiels, surtout dans les milieux urbains où le stress et la sédentarité augmentent les risques",
     mainCause: "Diabète & Urbanisation",
