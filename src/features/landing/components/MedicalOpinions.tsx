@@ -21,32 +21,35 @@ interface MedicalOpinion {
 const medicalOpinions: MedicalOpinion[] = [
   {
     id: "1",
-    doctorName: "Dr. Marie Ngo Bell",
-    specialty: "Cardiologue",
-    hospital: "Hôpital Général de Douala",
+    doctorName: "Dr. TIMA serges",
+    specialty: "spécialiste en traumatologie",
+    hospital: "Hôpital  Saint jean de Dieu de Yassa",
     city: "Douala",
-    opinion: "Au Cameroun, l'hypertension artérielle reste la première cause des maladies cardiaques. Elle est souvent liée à nos habitudes alimentaires riches en sel et à la sédentarité croissante dans nos villes. La prévention par l'éducation nutritionnelle est cruciale.",
+    opinion: "Au Cameroun, les maladies cardiovasculaires sont souvent découvertes trop tard, faute de dépistage précoce. Les principaux facteurs de risque dans notre contexte sont l’hypertension, le diabète, le stress,l’alcool, la sédentarité et la mauvaise alimentation".
+              "Une application simple et accessible permettant aux patients d’évaluer eux-mêmes leur risque, en fonction de leurs habitudes et symptômes, serait un excellent outil de prévention et d’orientation médicale et nous permettra à nous médecins de nous alléger la tâche",
     mainCause: "Hypertension & Alimentation",
-    image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop&crop=face",
+    image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop&crop=face",
     experience: 15
   },
   {
     id: "2",
-    doctorName: "Dr. Paul Mbarga Essomba",
+    doctorName: "Dr.  MONKAM",
     specialty: "Cardiologue Interventionnel",
-    hospital: "Centre Hospitalier d'Essos",
-    city: "Yaoundé",
-    opinion: "Le diabète de type 2 est en augmentation constante au Cameroun, particulièrement en milieu urbain. Cette pathologie, combinée au stress professionnel et à la pollution atmosphérique, crée un terrain favorable aux pathologies cardiovasculaires chez nos patients.",
+    hospital: "cabinet médical calvaincoeur 
+",
+    city: "Douala",
+    opinion: "Dans notre pratique quotidienne, nous rencontrons beaucoup de patients hypertendus qui ignorent leur état. Cette hypertension non détectée est la première cause des complications cardiaques graves, notamment les infarctus et les AVC. La prévention et le dépistage précoce sont essentiels, surtout dans les milieux urbains où le stress et la sédentarité augmentent les risques",
     mainCause: "Diabète & Urbanisation",
+    // image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop&crop=face",
     image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop&crop=face",
     experience: 20
   },
   {
     id: "3",
-    doctorName: "Dr. Aminata Oumarou",
-    specialty: "Médecin Interniste",
-    hospital: "Hôpital Régional de Garoua",
-    city: "Garoua",
+    doctorName: "Dr.  André Michel Yomba",
+    specialty: "Cardiologue",
+    hospital: "Hôpital central de Yaoundé",
+    city: "Yaounde",
     opinion: "Dans le Nord-Cameroun, nous observons une forte corrélation entre les maladies cardiaques et les facteurs génétiques combinés aux changements climatiques. La déshydratation chronique et les infections récurrentes fragilisent le système cardiovasculaire de nos populations.",
     mainCause: "Facteurs Génétiques & Climat",
     image: "https://images.unsplash.com/photo-1594824278271-d0c4cce3c9c8?w=400&h=400&fit=crop&crop=face",
