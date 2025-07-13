@@ -1,101 +1,92 @@
+
 export interface Message {
   id: string;
-  role: 'user' | 'bot';
   content: string;
+  sender: "user" | "bot";
   timestamp: Date;
 }
 
-export interface KnowledgeCategory {
-  category: string;
+export interface KnowledgeItem {
+  question: string;
+  answer: string;
   keywords: string[];
-  responses: string[];
+  category: string;
 }
 
-export const knowledgeBase: KnowledgeCategory[] = [
+export const knowledgeBase: KnowledgeItem[] = [
+  // Prévention des maladies cardiaques
   {
-    category: "Hypertension",
-    keywords: ["hypertension", "tension artérielle", "pression artérielle"],
-    responses: [
-      "L'hypertension artérielle est une condition médicale où la pression du sang dans les artères est constamment élevée. Il est important de surveiller régulièrement votre tension et de consulter un médecin si elle est souvent au-dessus de 140/90 mmHg.",
-      "Une alimentation saine, faible en sel et riche en fruits et légumes, ainsi qu'une activité physique régulière, peuvent aider à contrôler l'hypertension.",
-    ],
+    question: "Comment prévenir les maladies cardiaques ?",
+    answer: "Pour prévenir les maladies cardiaques : adoptez une alimentation équilibrée riche en fruits et légumes, pratiquez une activité physique régulière (30 min/jour), évitez le tabac et l'excès d'alcool, gérez votre stress, maintenez un poids santé, et faites des contrôles médicaux réguliers.",
+    keywords: ["prévention", "prévenir", "éviter", "protection"],
+    category: "prévention"
   },
   {
-    category: "Cholestérol",
-    keywords: ["cholestérol", "lipides", "HDL", "LDL"],
-    responses: [
-      "Le cholestérol est une substance grasse essentielle au corps, mais un excès de mauvais cholestérol (LDL) peut augmenter le risque de maladies cardiaques. Le bon cholestérol (HDL) aide à éliminer le LDL des artères.",
-      "Adoptez une alimentation faible en graisses saturées et trans, et riche en fibres. Les exercices physiques peuvent également améliorer votre taux de cholestérol.",
-    ],
+    question: "Quels aliments sont bons pour le cœur ?",
+    answer: "Les aliments bons pour le cœur incluent : les poissons gras (saumon, sardines), les fruits et légumes frais, les noix et graines, l'huile d'olive, les légumineuses, l'avoine, et les fruits rouges. Évitez les aliments transformés, trop salés ou sucrés.",
+    keywords: ["alimentation", "nourriture", "manger", "régime", "aliments"],
+    category: "nutrition"
+  },
+  
+  // Symptômes et signes d'alerte
+  {
+    question: "Quels sont les symptômes d'une crise cardiaque ?",
+    answer: "Les symptômes d'une crise cardiaque incluent : douleur thoracique intense, essoufflement, nausées, transpiration excessive, douleur irradiant vers le bras gauche, la mâchoire ou le dos. En cas de doute, appelez immédiatement les secours (15 ou 112).",
+    keywords: ["symptômes", "crise cardiaque", "infarctus", "douleur", "urgence"],
+    category: "urgence"
   },
   {
-    category: "Diabète",
-    keywords: ["diabète", "glycémie", "insuline", "sucre dans le sang"],
-    responses: [
-      "Le diabète est une maladie chronique où le corps a du mal à réguler le sucre dans le sang. Il existe principalement deux types : le diabète de type 1 et le diabète de type 2.",
-      "Un régime alimentaire contrôlé en glucides, une activité physique régulière et, si nécessaire, des médicaments ou de l'insuline, sont essentiels pour gérer le diabète.",
-    ],
+    question: "Comment reconnaître l'hypertension ?",
+    answer: "L'hypertension est souvent silencieuse. Symptômes possibles : maux de tête fréquents, vertiges, fatigue, vision floue, saignements de nez. Une tension normale est inférieure à 140/90 mmHg. Faites-vous contrôler régulièrement.",
+    keywords: ["hypertension", "tension", "pression artérielle"],
+    category: "diagnostic"
   },
+
+  // Facteurs de risque
   {
-    category: "Maladies Cardiaques",
-    keywords: [
-      "maladies cardiaques",
-      "cœur",
-      "insuffisance cardiaque",
-      "arythmie",
-      "cardiopathie",
-    ],
-    responses: [
-      "Les maladies cardiaques regroupent plusieurs affections affectant le cœur, comme l'insuffisance cardiaque, les arythmies et les cardiopathies coronariennes.",
-      "Consultez régulièrement un cardiologue, suivez un régime alimentaire sain, faites de l'exercice et évitez le tabac pour prévenir les maladies cardiaques.",
-    ],
+    question: "Quels sont les facteurs de risque cardiovasculaire ?",
+    answer: "Les principaux facteurs de risque sont : l'âge, le sexe masculin, les antécédents familiaux, le tabagisme, l'hypertension, le diabète, l'obésité, la sédentarité, le stress chronique, et un taux de cholestérol élevé.",
+    keywords: ["facteurs de risque", "risque", "cardiovasculaire"],
+    category: "risque"
   },
+
+  // Traitements et médicaments
   {
-    category: "Alimentation Saine",
-    keywords: ["alimentation", "régime", "nutrition", "sain", "vitamines"],
-    responses: [
-      "Une alimentation saine est essentielle pour la santé cardiaque. Privilégiez les fruits, légumes, céréales complètes, protéines maigres et graisses insaturées.",
-      "Limitez votre consommation de sel, de sucre, de graisses saturées et transformées, et d'aliments ultra-transformés.",
-    ],
+    question: "Comment traiter l'hypertension ?",
+    answer: "Le traitement de l'hypertension combine : changements de mode de vie (alimentation, exercice, réduction du sel), médicaments antihypertenseurs si nécessaire, suivi médical régulier, et gestion du stress. Ne jamais arrêter un traitement sans avis médical.",
+    keywords: ["traitement", "hypertension", "médicaments"],
+    category: "traitement"
   },
+
+  // Activité physique
   {
-    category: "Exercice Physique",
-    keywords: ["exercice", "sport", "activité physique", "entraînement"],
-    responses: [
-      "L'exercice physique régulier renforce le cœur, améliore la circulation sanguine et aide à maintenir un poids santé.",
-      "Essayez de faire au moins 150 minutes d'activité physique modérée par semaine, comme la marche rapide, la natation ou le vélo.",
-    ],
+    question: "Quel sport pratiquer pour le cœur ?",
+    answer: "Les meilleurs sports pour le cœur sont : la marche rapide, la course à pied, la natation, le vélo, la danse. Commencez progressivement, 30 minutes d'activité modérée 5 fois par semaine. Consultez votre médecin avant de débuter.",
+    keywords: ["sport", "exercice", "activité physique", "cardio"],
+    category: "exercice"
   },
+
+  // Stress et santé mentale
   {
-    category: "Tabagisme",
-    keywords: ["tabac", "cigarette", "fumer", "tabagisme"],
-    responses: [
-      "Le tabagisme est un facteur de risque majeur pour les maladies cardiaques. Il endommage les vaisseaux sanguins, augmente la pression artérielle et favorise la formation de caillots.",
-      "Arrêter de fumer est l'une des meilleures choses que vous puissiez faire pour votre santé cardiaque. Demandez de l'aide à votre médecin ou utilisez des ressources en ligne pour arrêter de fumer.",
-    ],
+    question: "Le stress peut-il causer des problèmes cardiaques ?",
+    answer: "Oui, le stress chronique augmente le risque cardiovasculaire en élevant la pression artérielle, en favorisant l'inflammation et les comportements à risque. Techniques de gestion : relaxation, méditation, exercice, sommeil suffisant.",
+    keywords: ["stress", "anxiété", "mental", "émotions"],
+    category: "bien-être"
   },
+
+  // Questions spécifiques au Cameroun
   {
-    category: "Stress",
-    keywords: ["stress", "anxiété", "détente", "relaxation"],
-    responses: [
-      "Le stress chronique peut augmenter le risque de maladies cardiaques. Trouvez des moyens sains de gérer votre stress, comme la méditation, le yoga ou les activités de loisirs.",
-      "Parlez à un professionnel de la santé si vous avez du mal à gérer votre stress.",
-    ],
+    question: "Quelles sont les principales causes de maladies cardiaques au Cameroun ?",
+    answer: "Au Cameroun, les principales causes sont : l'hypertension artérielle (très fréquente), le changement des habitudes alimentaires vers une alimentation plus riche, la sédentarité croissante en milieu urbain, le diabète en augmentation, et parfois des facteurs génétiques.",
+    keywords: ["Cameroun", "Afrique", "causes", "épidémiologie"],
+    category: "contexte-local"
   },
+
+  // Informations générales
   {
-    category: "Prévention",
-    keywords: ["prévention", "dépistage", "risque", "facteurs de risque"],
-    responses: [
-      "La prévention est essentielle pour réduire le risque de maladies cardiaques. Faites régulièrement des bilans de santé, surveillez votre tension artérielle et votre taux de cholestérol, et adoptez un mode de vie sain.",
-      "Identifiez et gérez vos facteurs de risque, comme l'hypertension, le diabète, le tabagisme et l'obésité.",
-    ],
-  },
-  {
-    category: "Médicaments",
-    keywords: ["médicaments", "traitement", "statines", "antihypertenseurs"],
-    responses: [
-      "Si vous avez une maladie cardiaque, votre médecin peut vous prescrire des médicaments pour contrôler votre état. Suivez attentivement les instructions de votre médecin et informez-le de tout effet secondaire.",
-      "Ne modifiez jamais votre traitement sans consulter votre médecin.",
-    ],
-  },
+    question: "Qu'est-ce que CardioPredict ?",
+    answer: "CardioPredict est une plateforme d'intelligence artificielle qui évalue votre risque de maladie cardiaque. Elle analyse vos données médicales pour fournir une prédiction personnalisée et des recommandations de prévention adaptées au contexte camerounais.",
+    keywords: ["CardioPredict", "plateforme", "IA", "prédiction"],
+    category: "plateforme"
+  }
 ];
