@@ -2,10 +2,9 @@ import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Star, Clock, Grid, List, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapPin, Star, Clock, Grid, List, ChevronLeft, ChevronRight, User } from "lucide-react";
 import DoctorDetailsModal from './DoctorDetailsModal';
 import BookingModal from './BookingModal';
 
@@ -16,7 +15,6 @@ interface Doctor {
   hospital: string;
   city: string;
   region: string;
-  image: string;
   rating: number;
   reviews: number;
   availability: string;
@@ -31,7 +29,6 @@ const mockDoctors: Doctor[] = [
     hospital: "Hôpital Général de Douala",
     city: "Douala",
     region: "Littoral",
-    image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&h=300&fit=crop&crop=face",
     rating: 4.8,
     reviews: 120,
     availability: "Lun-Ven, 8h-17h",
@@ -44,7 +41,6 @@ const mockDoctors: Doctor[] = [
     hospital: "Centre Hospitalier d'Essos",
     city: "Yaoundé",
     region: "Centre",
-    image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=300&h=300&fit=crop&crop=face",
     rating: 4.5,
     reviews: 95,
     availability: "Mar-Sam, 9h-16h",
@@ -57,7 +53,6 @@ const mockDoctors: Doctor[] = [
     hospital: "Hôpital Régional de Garoua",
     city: "Garoua",
     region: "Nord",
-    image: "https://images.unsplash.com/photo-1594824278271-d0c4cce3c9c8?w=300&h=300&fit=crop&crop=face",
     rating: 4.2,
     reviews: 78,
     availability: "Lun-Mer, 10h-15h",
@@ -70,7 +65,6 @@ const mockDoctors: Doctor[] = [
     hospital: "Centre Médical de Bonamoussadi",
     city: "Douala",
     region: "Littoral",
-    image: "https://images.unsplash.com/photo-1588335746339-99c98a926c03?w=300&h=300&fit=crop&crop=face",
     rating: 4.9,
     reviews: 150,
     availability: "Lun-Ven, 9h-18h",
@@ -83,7 +77,6 @@ const mockDoctors: Doctor[] = [
     hospital: "Polyclinique de l'Avenue Kennedy",
     city: "Yaoundé",
     region: "Centre",
-    image: "https://images.unsplash.com/photo-1573497019940-1c2c2248f92f?w=300&h=300&fit=crop&crop=face",
     rating: 4.6,
     reviews: 110,
     availability: "Mar-Jeu, 8h-16h",
@@ -96,7 +89,6 @@ const mockDoctors: Doctor[] = [
     hospital: "Centre de Santé Intégré de Maroua",
     city: "Maroua",
     region: "Extrême-Nord",
-    image: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&h=300&fit=crop&crop=face",
     rating: 4.3,
     reviews: 85,
     availability: "Lun-Ven, 7h-14h",
@@ -109,7 +101,6 @@ const mockDoctors: Doctor[] = [
     hospital: "Hôpital Catholique de Bangangté",
     city: "Bangangté",
     region: "Ouest",
-    image: "https://images.unsplash.com/photo-1589156280132-a593b11e6257?w=300&h=300&fit=crop&crop=face",
     rating: 4.7,
     reviews: 130,
     availability: "Mer-Ven, 10h-17h",
@@ -122,7 +113,6 @@ const mockDoctors: Doctor[] = [
     hospital: "Clinique du Plateau",
     city: "Yaoundé",
     region: "Centre",
-    image: "https://images.unsplash.com/photo-1628568913317-10907b35c01e?w=300&h=300&fit=crop&crop=face",
     rating: 4.4,
     reviews: 100,
     availability: "Lun-Sam, 9h-15h",
@@ -135,7 +125,6 @@ const mockDoctors: Doctor[] = [
     hospital: "Centre de Santé de Kousseri",
     city: "Kousseri",
     region: "Extrême-Nord",
-    image: "https://images.unsplash.com/photo-1598257054084-a84923923912?w=300&h=300&fit=crop&crop=face",
     rating: 4.1,
     reviews: 70,
     availability: "Lun-Jeu, 8h-13h",
@@ -229,10 +218,9 @@ const DoctorsList: React.FC = () => {
   const DoctorCard: React.FC<{ doctor: Doctor }> = ({ doctor }) => (
     <Card className="bg-white shadow-md rounded-lg overflow-hidden">
       <div className="relative">
-        <Avatar className="w-full h-48">
-          <AvatarImage src={doctor.image} alt={doctor.name} className="object-cover" />
-          <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
-        </Avatar>
+        <div className="w-full h-48 bg-primary/10 flex items-center justify-center">
+          <User className="h-16 w-16 text-primary" />
+        </div>
         <div className="absolute top-2 right-2">
           <Badge variant="secondary">
             <Star className="h-3 w-3 mr-1 inline-block" />
@@ -269,10 +257,9 @@ const DoctorsList: React.FC = () => {
     <Card className="bg-white shadow-md rounded-lg overflow-hidden">
       <CardContent className="grid grid-cols-3 gap-4 p-4">
         <div className="col-span-1">
-          <Avatar className="w-24 h-24">
-            <AvatarImage src={doctor.image} alt={doctor.name} className="object-cover" />
-            <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
-          </Avatar>
+          <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center">
+            <User className="h-8 w-8 text-primary" />
+          </div>
         </div>
         <div className="col-span-2">
           <CardTitle className="text-lg font-semibold">{doctor.name}</CardTitle>
