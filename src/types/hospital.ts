@@ -35,6 +35,8 @@ export interface Hospital {
   
   // Équipements
   equipment: string[];
+  capacity: number;
+  description?: string;
   emergencyServices: boolean;
   
   // Métadonnées

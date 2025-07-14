@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Hospital, HospitalFilters } from '@/types/hospital';
 import { HospitalService } from '@/services/hospital-service';
 import { Building2, MapPin, Phone, Mail, Clock, Star, Search, Filter } from 'lucide-react';
+import HospitalBookingModal from './HospitalBookingModal';
+import HospitalDetailsModal from './HospitalDetailsModal';
 
 const HospitalsList: React.FC = () => {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
@@ -21,6 +23,11 @@ const HospitalsList: React.FC = () => {
     service: 'all',
     search: ''
   });
+
+  // États pour les modals
+  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -102,6 +109,22 @@ const HospitalsList: React.FC = () => {
       service: 'all',
       search: ''
     });
+  };
+
+  // Fonctions pour les modals
+  const handleBookingClick = (hospital: Hospital) => {
+    setSelectedHospital(hospital);
+    setIsBookingModalOpen(true);
+  };
+
+  const handleDetailsClick = (hospital: Hospital) => {
+    setSelectedHospital(hospital);
+    setIsDetailsModalOpen(true);
+  };
+
+  const handleBookingFromDetails = () => {
+    setIsDetailsModalOpen(false);
+    setIsBookingModalOpen(true);
   };
 
   if (loading) {
@@ -259,19 +282,49 @@ const HospitalsList: React.FC = () => {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button className="flex-1">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={() => handleDetailsClick(hospital)}
+                  >
                     <Phone className="h-4 w-4 mr-2" />
-                    Contacter
+                    Détail
                   </Button>
-                  <Button variant="outline" className="flex-1">
+                  <Button 
+                    className="flex-1"
+                    onClick={() => handleBookingClick(hospital)}
+                  >
                     <MapPin className="h-4 w-4 mr-2" />
-                    Itinéraire
+                    Rendez-vous
                   </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
+      )}
+
+      {/* Modals */}
+      {selectedHospital && (
+        <>
+          <HospitalBookingModal
+            hospital={selectedHospital}
+            isOpen={isBookingModalOpen}
+            onClose={() => {
+              setIsBookingModalOpen(false);
+              setSelectedHospital(null);
+            }}
+          />
+          <HospitalDetailsModal
+            hospital={selectedHospital}
+            isOpen={isDetailsModalOpen}
+            onClose={() => {
+              setIsDetailsModalOpen(false);
+              setSelectedHospital(null);
+            }}
+            onBookAppointment={handleBookingFromDetails}
+          />
+        </>
       )}
     </div>
   );

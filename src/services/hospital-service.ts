@@ -31,6 +31,8 @@ const mockHospitals: Hospital[] = [
       "Dimanche": { open: "08:00", close: "18:00", isOpen: true }
     },
     equipment: ["IRM", "Scanner", "Cathétérisme cardiaque", "Échocardiographe"],
+    capacity: 350,
+    description: "Hôpital universitaire de référence avec plateau technique de pointe pour les urgences cardiologiques.",
     emergencyServices: true,
     createdAt: "2000-01-15T00:00:00Z",
     updatedAt: "2024-12-15T10:30:00Z"
@@ -63,6 +65,8 @@ const mockHospitals: Hospital[] = [
       "Dimanche": { open: "08:00", close: "16:00", isOpen: true }
     },
     equipment: ["Scanner", "Radiologie", "Laboratoire", "Échocardiographe"],
+    capacity: 250,
+    description: "Hôpital général moderne équipé pour les urgences cardiologiques et la cardiologie pédiatrique.",
     emergencyServices: true,
     createdAt: "1995-06-10T00:00:00Z",
     updatedAt: "2024-12-15T09:45:00Z"
@@ -95,6 +99,8 @@ const mockHospitals: Hospital[] = [
       "Dimanche": { open: "00:00", close: "00:00", isOpen: false }
     },
     equipment: ["Échocardiographe", "ECG", "Holter", "Test d'effort"],
+    capacity: 80,
+    description: "Clinique privée spécialisée en cardiologie avec équipement de diagnostic moderne.",
     emergencyServices: false,
     createdAt: "2010-03-20T00:00:00Z",
     updatedAt: "2024-12-15T11:20:00Z"
@@ -127,6 +133,8 @@ const mockHospitals: Hospital[] = [
       "Dimanche": { open: "08:00", close: "15:00", isOpen: true }
     },
     equipment: ["ECG", "Radiologie", "Laboratoire"],
+    capacity: 120,
+    description: "Hôpital de district offrant des services de cardiologie préventive et de médecine générale.",
     emergencyServices: true,
     createdAt: "2005-08-15T00:00:00Z",
     updatedAt: "2024-12-15T08:30:00Z"
@@ -159,6 +167,8 @@ const mockHospitals: Hospital[] = [
       "Dimanche": { open: "00:00", close: "00:00", isOpen: false }
     },
     equipment: ["ECG", "Tensiomètres", "Glucomètres"],
+    capacity: 50,
+    description: "Centre médical moderne spécialisé dans la prévention et le dépistage cardiovasculaire.",
     emergencyServices: false,
     createdAt: "2015-11-10T00:00:00Z",
     updatedAt: "2024-12-15T07:15:00Z"
