@@ -16,9 +16,9 @@ const HospitalsList: React.FC = () => {
   const [cities, setCities] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<HospitalFilters>({
-    city: '',
-    region: '',
-    service: '',
+    city: 'all',
+    region: 'all',
+    service: 'all',
     search: ''
   });
 
@@ -65,17 +65,17 @@ const HospitalsList: React.FC = () => {
     }
 
     // Filtre par région
-    if (filters.region) {
+    if (filters.region && filters.region !== 'all') {
       filtered = filtered.filter(hospital => hospital.region === filters.region);
     }
 
     // Filtre par ville
-    if (filters.city) {
+    if (filters.city && filters.city !== 'all') {
       filtered = filtered.filter(hospital => hospital.city === filters.city);
     }
 
     // Filtre par service
-    if (filters.service) {
+    if (filters.service && filters.service !== 'all') {
       filtered = filtered.filter(hospital => 
         hospital.services.some(service => 
           service.toLowerCase().includes(filters.service.toLowerCase())
@@ -91,15 +91,15 @@ const HospitalsList: React.FC = () => {
     
     // Reset city when region changes
     if (key === 'region') {
-      setFilters(prev => ({ ...prev, city: '' }));
+      setFilters(prev => ({ ...prev, city: 'all' }));
     }
   };
 
   const clearFilters = () => {
     setFilters({
-      city: '',
-      region: '',
-      service: '',
+      city: 'all',
+      region: 'all',
+      service: 'all',
       search: ''
     });
   };
@@ -144,7 +144,7 @@ const HospitalsList: React.FC = () => {
                 <SelectValue placeholder="Sélectionner la région" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Toutes les régions</SelectItem>
+                <SelectItem value="all">Toutes les régions</SelectItem>
                 {regions.map(region => (
                   <SelectItem key={region} value={region}>{region}</SelectItem>
                 ))}
@@ -156,9 +156,9 @@ const HospitalsList: React.FC = () => {
                 <SelectValue placeholder="Sélectionner la ville" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Toutes les villes</SelectItem>
+                <SelectItem value="all">Toutes les villes</SelectItem>
                 {cities
-                  .filter(city => !filters.region || hospitals.some(h => h.city === city && h.region === filters.region))
+                  .filter(city => !filters.region || filters.region === 'all' || hospitals.some(h => h.city === city && h.region === filters.region))
                   .map(city => (
                     <SelectItem key={city} value={city}>{city}</SelectItem>
                   ))}
@@ -171,7 +171,7 @@ const HospitalsList: React.FC = () => {
                   <SelectValue placeholder="Service" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tous les services</SelectItem>
+                  <SelectItem value="all">Tous les services</SelectItem>
                   <SelectItem value="cardiologie">Cardiologie</SelectItem>
                   <SelectItem value="urgences">Urgences</SelectItem>
                   <SelectItem value="chirurgie">Chirurgie cardiaque</SelectItem>
