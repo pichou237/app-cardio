@@ -92,6 +92,8 @@ const ResultsPage: React.FC = () => {
                     factors={result.factors} 
                     patientData={getPatientData()}
                     inputData={getInputData()}
+                    riskScore={result.risk}
+                    riskLevel={result.risk >= 70 ? "Élevé" : result.risk >= 40 ? "Modéré" : "Faible"}
                   />
                 </CardContent>
               </Card>
