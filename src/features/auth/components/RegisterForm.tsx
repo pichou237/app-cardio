@@ -60,7 +60,7 @@ const RegisterForm: React.FC = () => {
         toast.warning(apiError.message)
         // Activate offline mode if API is unreachable
         setIsOfflineMode(true);
-        // toast.warning("Mode hors ligne activé: API inaccessible");
+        toast.warning("Mode hors ligne activé: API inaccessible");
         // Early return to show the offline mode message
         setIsLoading(false);
         return;

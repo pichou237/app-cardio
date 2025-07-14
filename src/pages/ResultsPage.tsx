@@ -22,6 +22,7 @@ const ResultsPage: React.FC = () => {
   useEffect(() => {
     // Récupérer les résultats stockés temporairement
     const storedResult = sessionStorage.getItem("predictionResult");
+    toast.success("donnee charge avec succes")
     
     if (storedResult) {
       try {

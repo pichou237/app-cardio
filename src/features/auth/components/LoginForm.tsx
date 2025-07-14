@@ -74,8 +74,10 @@ const LoginForm: React.FC = () => {
           console.log("user:",data);
           toast.success("Connexion réussie!");
           if(data.role == 'admin'){
+            toast.success("Connexion réussie! : bienvenue admin:",data.email");
             navigate('/admin')
           }else{
+            toast.success("Connexion réussie! : bienvenue user:",data.email);
             navigate("/dashboard");
           }
           return;
@@ -86,6 +88,7 @@ const LoginForm: React.FC = () => {
         // Si l'erreur indique que l'utilisateur n'existe pas
         if (apiError.message && apiError.message.includes("utilisateur non trouvé")) {
           setLoginError("Utilisateur non trouvé. Veuillez vérifier vos identifiants ou créer un compte.");
+          toast.error("Utilisateur non trouvé. Veuillez vérifier vos identifiants ou créer un compte.");
           setIsLoading(false);
           return;
         }
@@ -119,6 +122,7 @@ const LoginForm: React.FC = () => {
         setLoginError("Identifiants incorrects. Veuillez réessayer.");
       }
     } catch (error) {
+      toast.error(error);
       console.error("Erreur de connexion:", error);
       setLoginError(error instanceof Error ? error.message : "Échec de la connexion. Veuillez réessayer.");
     } finally {
