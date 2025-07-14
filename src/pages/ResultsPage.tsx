@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
@@ -18,6 +17,30 @@ const ResultsPage: React.FC = () => {
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // Récupérer les données du patient depuis le localStorage ou la session
+  const getPatientData = () => {
+    try {
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+      const formData = JSON.parse(sessionStorage.getItem('predictionFormData') || '{}');
+      
+      return {
+        name: userData.name || formData.name || 'Patient',
+        age: formData.age || userData.age,
+        gender: formData.gender || userData.gender,
+      };
+    } catch (error) {
+      return { name: 'Patient' };
+    }
+  };
+
+  const getInputData = () => {
+    try {
+      return JSON.parse(sessionStorage.getItem('predictionFormData') || '{}');
+    } catch (error) {
+      return {};
+    }
+  };
 
   useEffect(() => {
     // Récupérer les résultats stockés temporairement
@@ -65,14 +88,15 @@ const ResultsPage: React.FC = () => {
               
               <Card>
                 <CardContent className="p-6">
-                  <RiskFactors factors={result.factors} />
+                  <RiskFactors 
+                    factors={result.factors} 
+                    patientData={getPatientData()}
+                    inputData={getInputData()}
+                  />
                 </CardContent>
               </Card>
               
               <div className="lg:col-span-2 flex justify-center space-x-4 mt-4">
-                <Button asChild>
-                  <a href="#" onClick={() => window.print()}>Télécharger le rapport</a>
-                </Button>
                 <Button variant="outline" asChild>
                   <a href="/dashboard">Retour au tableau de bord</a>
                 </Button>

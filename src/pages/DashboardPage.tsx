@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -8,10 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
 import StatisticsDashboard from "@/features/statistics/components/StatisticsDashboard";
 import HistoryStats from "@/features/prediction/components/HistoryStats";
-import DoctorsList from "@/features/doctors/components/DoctorsList";
+import HospitalsList from "@/features/hospitals/components/HospitalsList";
 import PatientAppointments from "@/features/appointments/components/PatientAppointments";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
-import { Calendar, Stethoscope, UserCircle, BarChart3, Users } from "lucide-react";
+import { Calendar, UserCircle, BarChart3, Users, Building2 } from "lucide-react";
 
 const DashboardPage: React.FC = () => {
   const { role, isAuthenticated, isOfflineMode } = useCurrentUser();
@@ -88,9 +87,9 @@ const DashboardPage: React.FC = () => {
                 <BarChart3 className="h-4 w-4" />
                 Aperçu
               </TabsTrigger>
-              <TabsTrigger value="doctors" className="flex items-center gap-2">
-                <Stethoscope className="h-4 w-4" />
-                Médecins
+              <TabsTrigger value="hospitals" className="flex items-center gap-2">
+                <Building2 className="h-4 w-4" />
+                Hôpitaux
               </TabsTrigger>
               <TabsTrigger value="appointments" className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
@@ -121,8 +120,8 @@ const DashboardPage: React.FC = () => {
               </div>
             </TabsContent>
             
-            <TabsContent value="doctors" className="mt-6">
-              <DoctorsList />
+            <TabsContent value="hospitals" className="mt-6">
+              <HospitalsList />
             </TabsContent>
             
             <TabsContent value="appointments" className="mt-6">
