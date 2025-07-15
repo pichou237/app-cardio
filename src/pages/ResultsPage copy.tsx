@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
@@ -17,30 +18,6 @@ const ResultsPage: React.FC = () => {
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
-  // Récupérer les données du patient depuis le localStorage ou la session
-  const getPatientData = () => {
-    try {
-      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-      const formData = JSON.parse(sessionStorage.getItem('predictionFormData') || '{}');
-      
-      return {
-        name: userData.name || formData.name || 'Patient',
-        age: formData.age || userData.age,
-        gender: formData.gender || userData.gender,
-      };
-    } catch (error) {
-      return { name: 'Patient' };
-    }
-  };
-
-  const getInputData = () => {
-    try {
-      return JSON.parse(sessionStorage.getItem('predictionFormData') || '{}');
-    } catch (error) {
-      return {};
-    }
-  };
 
   useEffect(() => {
     // Récupérer les résultats stockés temporairement
@@ -89,13 +66,7 @@ const ResultsPage: React.FC = () => {
               
               <Card>
                 <CardContent className="p-6">
-                  <RiskFactors 
-                    factors={result.factors} 
-                    patientData={getPatientData()}
-                    inputData={getInputData()}
-                    riskScore={result.risk}
-                    riskLevel={result.risk >= 70 ? "Élevé" : result.risk >= 40 ? "Modéré" : "Faible"}
-                  />
+                  <RiskFactors factors={result.factors} />
                 </CardContent>
               </Card>
               

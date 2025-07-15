@@ -74,10 +74,10 @@ const LoginForm: React.FC = () => {
           console.log("user:",data);
           toast.success("Connexion réussie!");
           if(data.role == 'admin'){
-            toast.success("Connexion réussie! : bienvenue admin:",data.email");
+            toast.success("Connexion réussie! : bienvenue admin:"+ data.email);
             navigate('/admin')
           }else{
-            toast.success("Connexion réussie! : bienvenue user:",data.email);
+            toast.success("Connexion réussie! : bienvenue user:"+ data.email);
             navigate("/dashboard");
           }
           return;
@@ -88,14 +88,15 @@ const LoginForm: React.FC = () => {
         // Si l'erreur indique que l'utilisateur n'existe pas
         if (apiError.message && apiError.message.includes("utilisateur non trouvé")) {
           setLoginError("Utilisateur non trouvé. Veuillez vérifier vos identifiants ou créer un compte.");
-          toast.error("Utilisateur non trouvé. Veuillez vérifier vos identifiants ou créer un compte.");
+          toast.warning("Utilisateur non trouvé. Veuillez vérifier vos identifiants ou créer un compte.");
           setIsLoading(false);
           return;
         }
         
         // Sinon, activer le mode hors ligne
         setIsOfflineMode(true);
-        toast.warning("Mode hors ligne activé: API inaccessible");
+        toast.warning("Utilisateur non trouvé. Veuillez vérifier vos identifiants ou créer un compte.");
+        // toast.warning("Mode hors ligne activé: API inaccessible");
       }
       
       // Vérifier les identifiants par défaut (pour démo et mode hors ligne)
