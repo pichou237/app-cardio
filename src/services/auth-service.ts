@@ -1,12 +1,11 @@
-
 import { API_ENDPOINTS, getAuthHeaders, saveApiKey, removeApiKey } from "./api-config";
 
 // Interface pour les données d'inscription/connexion
 export interface AuthCredentials {
   username: string;
-  email:string;
+  email: string;
   password: string;
-  role:string
+  role?: string; // Rendre le rôle optionnel
 }
 
 // Interface pour la mise à jour du profil utilisateur

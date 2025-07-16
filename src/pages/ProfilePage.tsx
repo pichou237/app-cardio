@@ -19,10 +19,10 @@ const ProfilePage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState({
     name: localStorage.getItem("username") || "Utilisateur",
-    email: localStorage.getItem("email") || "",
-    phone: "06 12 34 56 78",
-    birthdate: "1980-01-01",
-    address: "123 Rue d'akwa , 75001 douala",
+    email: localStorage.getItem("userEmail") || "",
+    phone: "+237 695 521 664",
+    birthdate: "2005-10-31",
+    address: "123 cite des palmiers , 75001 douala",
     profilePicture: ""
   });
  

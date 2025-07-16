@@ -8,6 +8,9 @@ interface RiskFactorsProps {
 }
 
 const RiskFactors: React.FC<RiskFactorsProps> = ({ factors }) => {
+
+  console.log("factors:",factors);
+
   return (
     <div className="space-y-4">
       <h3 className="text-xl font-semibold text-primary">Principaux facteurs de risque</h3>
