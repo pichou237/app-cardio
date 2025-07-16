@@ -67,6 +67,7 @@ const LoginForm: React.FC = () => {
         if (apiKey) {
           // Authentification réussie via l'API
           localStorage.setItem("api_key" ,apiKey);
+          localStorage.setItem("username" ,username);
           localStorage.setItem("userRole", "user"); // Par défaut utilisateur normal
           localStorage.setItem("isAuthenticated", "true");
           localStorage.setItem("userEmail", data.email);

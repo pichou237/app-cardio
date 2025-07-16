@@ -7,6 +7,7 @@ import RiskChart from "@/features/results/components/RiskChart";
 import RiskFactors from "@/features/results/components/RiskFactors";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Printer } from "lucide-react";
 import { toast } from "sonner";
 
 interface PredictionResult {
@@ -22,9 +23,6 @@ const ResultsPage: React.FC = () => {
   useEffect(() => {
     // Récupérer les résultats stockés temporairement
     const storedResult = sessionStorage.getItem("predictionResult");
-    const stored = localStorage.getItem("predictionResult");
-  // const predictionData = stored ? JSON.parse(stored) : null;
-
     toast.success("donnee charge avec succes")
     
     if (storedResult) {
@@ -74,8 +72,15 @@ const ResultsPage: React.FC = () => {
               </Card>
               
               <div className="lg:col-span-2 flex justify-center space-x-4 mt-4">
-                <Button asChild>
-                  <a href="#" onClick={() => window.print()}>Télécharger le rapport</a>
+                <Button 
+                  onClick={() => {
+                    toast.success("Impression en cours - Ouverture de la fenêtre d'impression");
+                    window.print();
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <Printer className="h-4 w-4" />
+                  Imprimer le rapport
                 </Button>
                 <Button variant="outline" asChild>
                   <a href="/dashboard">Retour au tableau de bord</a>

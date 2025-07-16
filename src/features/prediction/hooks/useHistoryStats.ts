@@ -14,7 +14,9 @@ interface RiskDistribution {
 }
 
 export const useHistoryStats = () => {
-  const { history, isLoading, error } = usePredictionHistory();
+  const { historyData, isLoading, error } = usePredictionHistory();
+  const history = usePredictionHistory().history;
+  console.log("history:",history);
   const [monthlyStats, setMonthlyStats] = useState<MonthlyStats[]>([]);
   const [riskDistribution, setRiskDistribution] = useState<RiskDistribution>({
     lowRisk: 0,
