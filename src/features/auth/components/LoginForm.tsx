@@ -265,7 +265,7 @@ const LoginForm: React.FC = () => {
           </Link>
         </p>
         <p className="mt-2 text-xs text-muted-foreground">
-          Accès admin: admin@admin.com / admin123
+          Accès admin:
         </p>
       </div>
     </div>
