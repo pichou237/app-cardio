@@ -18,7 +18,7 @@ import { fr } from "date-fns/locale";
 const ProfilePage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState({
-    name: localStorage.getItem("username") || "Utilisateur",
+    name: localStorage.getItem("userEmaail") || "Utilisateur",
     email: localStorage.getItem("userEmail") || "",
     phone: "+237 695 521 664",
     birthdate: "2005-10-31",
