@@ -43,7 +43,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated: propIsAuthenticated = 
       if (userRole === "admin") {
         navigate("/admin");
       } else {
-        navigate("/prediction");
+        navigate("/dashboard");
       }
     }
   }, [isAuthenticated, location.pathname, navigate, userRole]);
@@ -66,7 +66,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated: propIsAuthenticated = 
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
             <Link 
-              to={isAuthenticated ? (userRole === "admin" ? "/admin" : "/prediction") : "/"} 
+              to={isAuthenticated ? (userRole === "admin" ? "/admin" : "/dashboard") : "/"} 
               className="flex items-center text-xl font-bold text-primary"
             >
               <HeartPulse className="h-6 w-6 mr-2 text-primary" />
