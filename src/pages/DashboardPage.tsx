@@ -5,12 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
+
+import PredictionHistory from "@/features/prediction/components/PredictionHistory";
+
 import StatisticsDashboard from "@/features/statistics/components/StatisticsDashboard";
 import HistoryStats from "@/features/prediction/components/HistoryStats";
 import HospitalsList from "@/features/hospitals/components/HospitalsList";
 import PatientAppointments from "@/features/appointments/components/PatientAppointments";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
-import { Calendar, UserCircle, BarChart3, Users, Building2 } from "lucide-react";
+import { Calendar, UserCircle, BarChart3, Users, Building2,Heart } from "lucide-react";
 
 const DashboardPage: React.FC = () => {
   const { role, isAuthenticated, isOfflineMode } = useCurrentUser();
@@ -82,19 +85,25 @@ const DashboardPage: React.FC = () => {
           
           {/* Onglets des fonctionnalités */}
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className={`grid w-full ${isAdmin || isDoctor ? 'grid-cols-5' : 'grid-cols-3'}`}>
-              <TabsTrigger value="overview" className="flex items-center gap-2">
+            <TabsList className={`grid w-full ${isAdmin || isDoctor ? 'grid-cols-5' : 'grid-cols-4'}`}>
+              <TabsTrigger value="overview" className="flex items-center gap-1">
                 <BarChart3 className="h-4 w-4" />
                 Aperçu
               </TabsTrigger>
-              <TabsTrigger value="hospitals" className="flex items-center gap-2">
+              <TabsTrigger value="hospitals" className="flex items-center gap-1">
                 <Building2 className="h-4 w-4" />
                 Hôpitaux
               </TabsTrigger>
-              <TabsTrigger value="appointments" className="flex items-center gap-2">
+              <TabsTrigger value="appointments" className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
                 Rendez-vous
               </TabsTrigger>
+              
+              <TabsTrigger value="history" className="flex items-center gap-1">
+                  <Heart className="h-4 w-4" />
+                  Historique
+                </TabsTrigger>
+
               {isDoctor && (
                 <TabsTrigger value="doctor-space" className="flex items-center gap-2">
                   <Users className="h-4 w-4" />
@@ -127,6 +136,10 @@ const DashboardPage: React.FC = () => {
             <TabsContent value="appointments" className="mt-6">
               <PatientAppointments />
             </TabsContent>
+
+              <TabsContent value="history" className="mt-6">
+                <PredictionHistory />
+              </TabsContent>
             
             {isDoctor && (
               <TabsContent value="doctor-space" className="mt-6">
