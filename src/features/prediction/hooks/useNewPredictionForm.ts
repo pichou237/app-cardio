@@ -207,7 +207,7 @@ export const useNewPredictionForm = () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Appel API réel
-      const response = await fetch('https://api-appcardio-predict.onrender.com/predict', {
+      const response = await fetch('http://127.0.0.1:5000/predict', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -224,11 +224,11 @@ export const useNewPredictionForm = () => {
       }
 
       const result = await response.json();
-      
+      // console.log("resultdata:",result.risk_level);
       // Stockage des résultats avec les examens
       localStorage.setItem('predictionResult', JSON.stringify({
         prediction: result.prediction,
-        riskLevel: result.riskLevel,
+        riskLevel: result.risk_level,
         recommendations: getSimulatedRecommendations(data),
         riskFactors: getSimulatedRiskFactors(data),
         medicalExams: getMedicalExamsStatus(data), // Nouvelle section pour les examens

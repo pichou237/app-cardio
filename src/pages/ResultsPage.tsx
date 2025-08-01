@@ -580,6 +580,7 @@ const ResultsPage: React.FC = () => {
       try {
         setResult(predictionData);
         toast.success("Données chargées avec succès");
+        console.log(predictionData);
       } catch (error) {
         console.error("Erreur lors de la récupération des résultats:", error);
         toast.error("Impossible de charger les résultats de l'analyse.");
@@ -628,7 +629,7 @@ const ResultsPage: React.FC = () => {
                     Résultat de l'analyse cardiaque
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                {/* <CardContent>
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-4xl font-bold text-primary">
@@ -637,19 +638,43 @@ const ResultsPage: React.FC = () => {
                       <p className="text-lg text-muted-foreground">Niveau de risque</p>
                     </div>
                     <Badge 
-                      variant={result.prediction < 30 ? "secondary" : result.risk < 60 ? "default" : "destructive"}
+                      variant={result.risk_level == "Modére" ? "secondary" : result.risk_level == "l" ? "default" : "destructive"}
                       className="text-lg px-4 py-2"
                     >
-                      {result.prediction < 30 ? "Faible" : result.risk < 60 ? "Modéré" : "Élevé"}
+                      {result.risk_level < 30 ? "Faible" : result.risk_level < 60 ? "Modéré" : "Élevé"}
                     </Badge>
                   </div>
-                </CardContent>
+                </CardContent> */}
+
+                <CardContent>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-4xl font-bold text-primary">
+                          {result.prediction.toFixed(2)}%
+                        </span>
+                        <p className="text-lg text-muted-foreground">Niveau de risque</p>
+                      </div>
+                      <Badge
+                        variant={
+                          result.riskLevel === "Modéré"
+                            ? "secondary"
+                            : result.riskLevel === "Faible"
+                            ? "secondary"
+                            : "destructive"
+                        }
+                        className="text-lg px-4 py-2"
+                      >
+                        {result.riskLevel}
+                      </Badge>
+                    </div>
+                  </CardContent>
+
               </Card>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <Card>
                   <CardContent className="p-6">
-                    <RiskChart riskScore={result.prediction} />
+                    <RiskChart riskScore={result.prediction} riskLevel={result.riskLevel} />
                   </CardContent>
                 </Card>
                 
