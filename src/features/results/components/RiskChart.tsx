@@ -168,8 +168,8 @@ const RiskChart: React.FC<RiskChartProps> = ({ riskScore, riskLevel }) => {
   };
 
   const data = [
-    { name: "Sécurité", value:  normalizedRiskScore },
-    { name: "Risque", value: 100 -normalizedRiskScore },
+    { name: "Sécurité", value: 100 - normalizedRiskScore },
+    { name: "Risque", value:  normalizedRiskScore },
   ];
 
   const COLORS = ["#1f64efff", getRiskColor(riskLevel)]; // gris pour sécurité, couleur dynamique pour risque
