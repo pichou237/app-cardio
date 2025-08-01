@@ -1,8 +1,8 @@
 // Configuration de l'API pour CardioPredict
 
-// URL de base de l'API
-// export const API_BASE_URL = "https://api-appcardio-predict.onrender.com"; // À remplacer par l'URL réelle en production
-export const API_BASE_URL = "http://127.0.0.1:5000"; // À remplacer par l'URL réelle en production
+URL de base de l'APIexport const API_BASE_URL = "https://api-appcardio-predict.onrender.com"; // À remplacer par l'URL réelle en production
+
+// export const API_BASE_URL = "http://127.0.0.1:5000"; // À remplacer par l'URL réelle en production
 
 // Endpoints de l'API
 export const API_ENDPOINTS = {
