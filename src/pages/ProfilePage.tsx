@@ -136,7 +136,7 @@ const ProfilePage: React.FC = () => {
           </div>
           
           <Tabs defaultValue="profile">
-            <TabsList className="grid w-full grid-cols-2 md:w-auto md:grid-cols-3">
+            <TabsList className="grid w-full grid-cols-3 md:w-auto md:grid-cols-3">
               <TabsTrigger value="profile">
                 <User className="mr-2 h-4 w-4" />
                 Profil

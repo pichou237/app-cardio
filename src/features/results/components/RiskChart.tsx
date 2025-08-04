@@ -267,7 +267,10 @@ const RiskChart: React.FC<RiskChartProps> = ({ riskScore, riskLevel, probabiliti
             cx="50%"
             cy="50%"
             label={({ name }) => name.split(' (')[0]}
-            labelLine={false}
+            // label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            labelLine={true}
+            paddingAngle={1}
+            innerRadius={40}
             outerRadius={80}
             dataKey="value"
           >

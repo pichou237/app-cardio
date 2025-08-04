@@ -66,7 +66,7 @@ export interface Message {
 export interface HealthKnowledgeEntry {
   keywords: string[];
   response: string;
-  category: "nutrition" | "activity" | "mental" | "habits" | "biometrics";
+  category: "nutrition" | "activity" | "mental" | "habits" | "biometrics" |"general";
   priority: number;
   sources?: string[];
   followUpQuestions?: string[];
