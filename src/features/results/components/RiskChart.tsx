@@ -239,6 +239,7 @@ const RiskChart: React.FC<RiskChartProps> = ({ riskScore, riskLevel, probabiliti
     "Élevé": "#ef4444"
   };
 
+
   const pieData = [
     { name: `Faible (${probabilitiesArray[0].toFixed(1)}%)`, value: probabilitiesArray[0], color: RISK_COLORS["Faible"] },
     { name: `Modéré (${probabilitiesArray[1].toFixed(1)}%)`, value: probabilitiesArray[1], color: RISK_COLORS["Modéré"] },
