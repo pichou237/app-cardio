@@ -795,7 +795,7 @@ const ResultsPage: React.FC = () => {
                   </CardContent>
                 </Card>
 
-                <div className="lg:col-span-2 flex justify-center space-x-4 mt-4">
+                {/* <div className="lg:col-span-2 flex justify-center space-x-4 mt-4">
                   <Button 
                     onClick={() => {
                       toast.success("Impression en cours - Ouverture de la fenêtre d'impression");
@@ -816,6 +816,33 @@ const ResultsPage: React.FC = () => {
                       document.getElementById('hospitals-section')?.scrollIntoView({ behavior: 'smooth' });
                     }}
                     className="flex items-center gap-2"
+                  >
+                    <Calendar className="h-4 w-4" />
+                    Prendre rendez-vous
+                  </Button>
+                </div> */}
+                <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mt-4 flex-wrap lg:col-span-2">
+                  <Button 
+                    onClick={() => {
+                      toast.success("Impression en cours - Ouverture de la fenêtre d'impression");
+                      window.print();
+                    }}
+                    className="flex items-center gap-2 w-full sm:w-auto"
+                  >
+                    <Printer className="h-4 w-4" />
+                    Imprimer le rapport
+                  </Button>
+                  
+                  <Button variant="outline" asChild className="w-full sm:w-auto">
+                    <a href="/dashboard">Retour au tableau de bord</a>
+                  </Button>
+
+                  <Button 
+                    variant="secondary"
+                    onClick={() => {
+                      document.getElementById('hospitals-section')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="flex items-center gap-2 w-full sm:w-auto"
                   >
                     <Calendar className="h-4 w-4" />
                     Prendre rendez-vous
