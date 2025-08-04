@@ -2,6 +2,7 @@
 import { API_ENDPOINTS, getAuthHeaders } from "./api-config";
 
 export interface HistoryEntry {
+  risk_level: string;
   id: number;
   user_id: number;
   timestamp: string;

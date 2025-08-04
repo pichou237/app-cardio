@@ -18,10 +18,10 @@ import { fr } from "date-fns/locale";
 const ProfilePage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState({
-    name: localStorage.getItem("userEmaail") || "Utilisateur",
+    name: localStorage.getItem("profile_username") || "Utilisateur",
     email: localStorage.getItem("userEmail") || "",
     phone: "+237 695 521 664",
-    birthdate: "2005-10-31",
+    birthdate: localStorage.getItem("profile_created_at") || "2005-10-31",
     address: "123 cite des palmiers , 75001 douala",
     profilePicture: ""
   });
@@ -29,6 +29,7 @@ const ProfilePage: React.FC = () => {
   console.log(localStorage)
   const { history, isLoading: isLoadingHistory } = usePredictionHistory();
 
+  console.log("history:",history);
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -108,10 +109,10 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  const formatRiskLevel = (prediction: number) => {
-    const riskPercentage = prediction;
-    if (riskPercentage < 30) return "Faible";
-    if (riskPercentage < 70) return "Modéré";
+  const formatRiskLevel = (risk_level: string) => {
+    // const riskPercentage = prediction;
+    if (risk_level == 'Faible') return "Faible";
+    if (risk_level  == 'Modéré') return "Modéré";
     return "Élevé";
   };
 
@@ -275,11 +276,12 @@ const ProfilePage: React.FC = () => {
                               </span>
                             </div>
                             <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              entry.prediction < 25 ? 'bg-green-100 text-green-800' : 
-                              entry.prediction < 50 ? 'bg-yellow-100 text-yellow-800' : 
+                              entry.risk_level == 'Faible' ? 'bg-green-100 text-green-800' : 
+                              entry.risk_level == 'Modéré' ? 'bg-yellow-100 text-yellow-800' : 
                               'bg-red-100 text-red-800'
                             }`}>
-                              Risque {formatRiskLevel(entry.prediction)}
+                              {/* Risque {formatRiskLevel(entry.risk_level)} */}
+                                Risque {entry.risk_level}
                             </div>
                           </div>
                           <p className="text-sm text-muted-foreground">

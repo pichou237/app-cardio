@@ -229,6 +229,7 @@ export const useNewPredictionForm = () => {
       localStorage.setItem('predictionResult', JSON.stringify({
         prediction: result.prediction,
         riskLevel: result.risk_level,
+        probabilities : result.probabilities,
         recommendations: getSimulatedRecommendations(data),
         riskFactors: getSimulatedRiskFactors(data),
         medicalExams: getMedicalExamsStatus(data), // Nouvelle section pour les examens

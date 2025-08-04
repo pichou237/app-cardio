@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { API_ENDPOINTS, getAuthHeaders, saveApiKey, removeApiKey } from "./api-config";
 
 // Interface pour les données d'inscription/connexion
@@ -78,9 +79,9 @@ export const AuthService = {
   },
 
   // Mise à jour des informations utilisateur
-  updateUser: async (username: string, updateData: UpdateUserData): Promise<void> => {
+  updateUser: async (currentUsername: string, updateData: UpdateUserData): Promise<void> => {
     try {
-      const response = await fetch(API_ENDPOINTS.UPDATE_USER(username), {
+      const response = await fetch(API_ENDPOINTS.UPDATE_USER, {
         method: "PUT",
         headers: getAuthHeaders(),
         body: JSON.stringify(updateData),
@@ -117,4 +118,27 @@ export const AuthService = {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userRole");
   },
+
+  // tourne le profile
+    // Récupération du profil utilisateur
+  getProfile: async (apiKey: string): Promise<any> => {
+    try {
+      const response = await fetch(`${API_ENDPOINTS.GET_PROFILE}?api_key=${apiKey}`, {
+        method: "GET",
+        headers: getAuthHeaders(), // utile si tu veux envoyer d'autres headers type Content-Type
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erreur lors de la récupération du profil.");
+      }
+
+      const data = await response.json();
+      return data.profile;
+    } catch (error) {
+      console.error("Erreur lors de la récupération du profil:", error);
+      throw error;
+    }
+  }
+
 };
