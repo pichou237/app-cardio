@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -64,25 +65,63 @@ const LoginForm: React.FC = () => {
         const apiKey = await AuthService.login(credentials);
         console.log(apiKey)
         
+        // if (apiKey) {
+        //   // Authentification réussie via l'API
+        //   localStorage.setItem("api_key" ,apiKey);
+        //   localStorage.setItem("username" ,data.username);
+        //   localStorage.setItem("userRole", "user"); // Par défaut utilisateur normal
+        //   localStorage.setItem("isAuthenticated", "true");
+        //   localStorage.setItem("userEmail", data.email);
+        //   localStorage.setItem("isOfflineMode", "false");
+        //   console.log("user:",data);
+        //   toast.success("Connexion réussie!");
+        //   if(data.role == 'admin'){
+        //     toast.success("Connexion réussie! : bienvenue admin:"+ data.email);
+        //     navigate('/admin')
+        //   }else{
+        //     toast.success("Connexion réussie! : bienvenue user:"+ data.email);
+        //     navigate("/dashboard");
+        //   }
+        //   return;
+        // }
+
         if (apiKey) {
           // Authentification réussie via l'API
-          localStorage.setItem("api_key" ,apiKey);
-          localStorage.setItem("username" ,data.username);
-          localStorage.setItem("userRole", "user"); // Par défaut utilisateur normal
+          localStorage.setItem("api_key", apiKey);
+          localStorage.setItem("username", data.username);
+          localStorage.setItem("userRole", "user");
           localStorage.setItem("isAuthenticated", "true");
           localStorage.setItem("userEmail", data.email);
           localStorage.setItem("isOfflineMode", "false");
-          console.log("user:",data);
+
+          // 🆕 Récupérer le profil et stocker les infos utiles
+          try {
+            const profile = await AuthService.getProfile(apiKey);
+            console.log("Profil récupéré :", profile);
+
+            localStorage.setItem("profile_id", profile.id);
+            localStorage.setItem("profile_username", profile.username);
+            localStorage.setItem("profile_role", profile.role);
+            localStorage.setItem("profile_created_at", profile.created_at);
+            localStorage.setItem("profile_total_predictions", profile.stats.total_predictions.toString());
+            localStorage.setItem("profile_average_risk", profile.stats.average_risk.toString());
+            localStorage.setItem("profile_last_prediction", profile.stats.last_prediction ?? "");
+          } catch (profileError: any) {
+            console.error("Erreur lors de la récupération du profil :", profileError);
+            toast.error("Impossible de récupérer le profil utilisateur.");
+          }
+
           toast.success("Connexion réussie!");
-          if(data.role == 'admin'){
-            toast.success("Connexion réussie! : bienvenue admin:"+ data.email);
-            navigate('/admin')
-          }else{
-            toast.success("Connexion réussie! : bienvenue user:"+ data.email);
+          if (data.role === "admin") {
+            toast.success("Connexion réussie! : bienvenue admin: " + data.email);
+            navigate("/admin");
+          } else {
+            toast.success("Connexion réussie! : bienvenue user: " + data.email);
             navigate("/dashboard");
           }
           return;
         }
+
       } catch (apiError: any) {
         console.error("API Error:", apiError);
         
@@ -109,7 +148,7 @@ const LoginForm: React.FC = () => {
         // Stocker les infos utilisateur dans localStorage
         localStorage.setItem("userRole", matchedUser.role);
         localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("userEmail", matchedUser.username);
+        localStorage.setItem("userEmail", matchedUser.email);
         localStorage.setItem("isOfflineMode", isOfflineMode ? "true" : "false");
         
         if (matchedUser.role === "admin") {

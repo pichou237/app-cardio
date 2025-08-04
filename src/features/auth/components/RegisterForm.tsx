@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -12,7 +13,7 @@ import { toast } from "sonner";
 import { Link ,useNavigate} from "react-router-dom";
 import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import SocialLogin from "./SocialLogin";
-import { AuthService } from "@/services/auth-service";
+import { AuthService,AuthCredentials } from "@/services/auth-service";
 
 const registerSchema = z.object({
   username: z.string().min(2, { message: "Le nom doit contenir au moins 2 caractères." }),
@@ -45,66 +46,222 @@ const RegisterForm: React.FC = () => {
     },
   });
 
-  const onSubmit = async (data: RegisterFormData) => {
-    setIsLoading(true);
-    try {
-      const { username, password , email } = data;
-      console.log("data:",data)
-      try {
-        await AuthService.register({
-          username, password, email,
-          role: "utilisateur"
-        });
-      } catch (apiError) {
-        console.error("API Error:", apiError);
-        toast.warning(apiError.message)
-        // Activate offline mode if API is unreachable
-        setIsOfflineMode(true);
-        toast.warning("Mode hors ligne activé: API inaccessible");
-        // Early return to show the offline mode message
-        setIsLoading(false);
-        return;
-      }
+  // const onSubmit = async (data: RegisterFormData) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const { username, password , email } = data;
+  //     console.log("data:",data)
+  //     try {
+  //       await AuthService.register({
+  //         username, password, email,
+  //         role: "utilisateur"
+  //       });
+  //     } catch (apiError) {
+  //       console.error("API Error:", apiError);
+  //       toast.warning(apiError.message)
+  //       // Activate offline mode if API is unreachable
+  //       setIsOfflineMode(true);
+  //       toast.warning("Mode hors ligne activé: API inaccessible");
+  //       // Early return to show the offline mode message
+  //       setIsLoading(false);
+  //       return;
+  //     }
       
-      toast.success("Inscription réussie! Vous êtes maintenant connecté.");
+  //     toast.success("Inscription réussie! Vous êtes maintenant connecté.");
       
-      // Enregistrer les informations d'authentification
-      localStorage.setItem("userRole", "user");
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("username", username);
-      localStorage.setItem("email", email);
-      localStorage.setItem("isOfflineMode", "false");
+  //     // Enregistrer les informations d'authentification
+  //     localStorage.setItem("userRole", "user");
+  //     localStorage.setItem("isAuthenticated", "true");
+  //     localStorage.setItem("username", username);
+  //     localStorage.setItem("email", email);
+  //     localStorage.setItem("isOfflineMode", "false");
       
-      // Redirection après inscription
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Erreur d'inscription:", error);
-      toast.error(error instanceof Error ? error.message : "Échec de l'inscription. Veuillez réessayer.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     // Redirection après inscription
+  //     navigate("/dashboard");
+  //   } catch (error) {
+  //     console.error("Erreur d'inscription:", error);
+  //     toast.error(error instanceof Error ? error.message : "Échec de l'inscription. Veuillez réessayer.");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   
-  const handleOfflineRegister = () => {
-    setIsLoading(true);
+  // const handleOfflineRegister = () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const username = form.getValues("username") || "utilisateur.test";
+      
+  //     // Set offline user
+  //     localStorage.setItem("userRole", "user");
+  //     localStorage.setItem("isAuthenticated", "true");
+  //     localStorage.setItem("username", username);
+  //     localStorage.setItem("isOfflineMode", "true");
+      
+  //     toast.success("Inscription en mode hors ligne réussie!");
+  //     navigate("/dashboard");
+  //   } catch (error) {
+  //     console.error("Erreur d'inscription offline:", error);
+  //     toast.error("Erreur lors de l'inscription en mode hors ligne");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // const onSubmit = async (data: RegisterFormData) => {
+  // setIsLoading(true);
+  // try {
+  //   const { username, password, email } = data;
+  //   console.log("data:", data);
+
+  //   try {
+  //     await AuthService.register({
+  //       username,
+  //       password,
+  //       email,
+  //       role: "utilisateur"
+  //     });
+  //   } catch (apiError: any) {
+  //     console.error("API Error:", apiError);
+  //     toast.warning(apiError.message);
+  //     // Activate offline mode if API is unreachable
+  //     setIsOfflineMode(true);
+  //     toast.warning("Mode hors ligne activé: API inaccessible");
+  //     setIsLoading(false);
+  //     return;
+  //   }
+
+  //   toast.success("Inscription réussie! Vous êtes maintenant connecté.");
+
+  //   // Enregistrer les informations d'authentification de base
+  //   localStorage.setItem("userRole", "user");
+  //   localStorage.setItem("isAuthenticated", "true");
+  //   localStorage.setItem("username", username);
+  //   localStorage.setItem("email", email);
+  //   localStorage.setItem("isOfflineMode", "false");
+
+  //   // 🆕 Récupérer le profil complet et stocker les infos utiles
+  //   try {
+  //     const credentials: AuthCredentials = {
+  //       username: data.username,
+  //       email: data.email,
+  //       password: data.password,
+  //     };
+
+  //     const apiKey = await AuthService.login(credentials);
+  //     console.log(apiKey);     
+  //     const profile = await AuthService.getProfile(apiKey);
+  //     console.log("Profil récupéré :", profile);
+
+  //     localStorage.setItem("profile_id", profile.id);
+  //     localStorage.setItem("profile_username", profile.username);
+  //     localStorage.setItem("profile_role", profile.role);
+  //     localStorage.setItem("profile_created_at", profile.created_at);
+  //     localStorage.setItem("profile_total_predictions", profile.stats.total_predictions.toString());
+  //     localStorage.setItem("profile_average_risk", profile.stats.average_risk.toString());
+  //     localStorage.setItem("profile_last_prediction", profile.stats.last_prediction ?? "");
+  //   } catch (profileError: any) {
+  //     console.error("Erreur lors de la récupération du profil :", profileError);
+  //     toast.error("Impossible de récupérer le profil utilisateur.");
+  //   }
+
+  //   // // Redirection selon rôle (ici role utilisateur par défaut)
+  //   // if (data.role === "admin") {
+  //   //   toast.success("Connexion réussie! : bienvenue admin: " + data.email);
+  //   //   navigate("/admin");
+  //   // } else {
+  //     toast.success("Connexion réussie! : bienvenue user: " + data.email);
+  //     navigate("/dashboard");
+    
+    
+  //   } catch (error) {
+  //     console.error("Erreur d'inscription:", error);
+  //     toast.error(error instanceof Error ? error.message : "Échec de l'inscription. Veuillez réessayer.");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+
+  const onSubmit = async (data: RegisterFormData) => {
+  setIsLoading(true);
+
+  try {
+    const { username, password, email } = data;
+    console.log("data:", data);
+
+    // Étape 1 : inscription
     try {
-      const username = form.getValues("username") || "utilisateur.test";
-      
-      // Set offline user
-      localStorage.setItem("userRole", "user");
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("username", username);
-      localStorage.setItem("isOfflineMode", "true");
-      
-      toast.success("Inscription en mode hors ligne réussie!");
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Erreur d'inscription offline:", error);
-      toast.error("Erreur lors de l'inscription en mode hors ligne");
-    } finally {
+      await AuthService.register({
+        username,
+        password,
+        email,
+        role: "utilisateur"
+      });
+    } catch (apiError: any) {
+      console.error("API Error:", apiError);
+      toast.warning(apiError.message);
+      setIsOfflineMode(true);
+      toast.warning("Mode hors ligne activé : API inaccessible");
       setIsLoading(false);
+      return;
     }
-  };
+
+    toast.success("Inscription réussie ! Vous êtes maintenant connecté.");
+
+    // Enregistrer les informations d'authentification de base
+    localStorage.setItem("userRole", "user");
+    localStorage.setItem("isAuthenticated", "true");
+    localStorage.setItem("username", username);
+    localStorage.setItem("email", email);
+    localStorage.setItem("isOfflineMode", "false");
+
+    // Étape 2 : récupération de l'API key + profil
+    try {
+      const credentials: AuthCredentials = {
+        username,
+        email,
+        password,
+      };
+
+      const apiKey = await AuthService.login(credentials);
+      console.log("API key :", apiKey);
+
+      const profile = await AuthService.getProfile(apiKey);
+      console.log("Profil récupéré :", profile);
+
+      localStorage.setItem("profile_id", profile.id);
+      localStorage.setItem("profile_username", profile.username);
+      localStorage.setItem("profile_role", profile.role);
+      localStorage.setItem("profile_created_at", profile.created_at);
+      localStorage.setItem("profile_total_predictions", profile.stats.total_predictions.toString());
+      localStorage.setItem("profile_average_risk", profile.stats.average_risk.toString());
+      localStorage.setItem("profile_last_prediction", profile.stats.last_prediction ?? "");
+    } catch (profileError: any) {
+      console.error("Erreur lors de la récupération du profil :", profileError);
+      toast.error("Impossible de récupérer le profil utilisateur.");
+    }
+
+    // Redirection vers le dashboard
+    toast.success("Connexion réussie ! Bienvenue " + email);
+    navigate("/dashboard");
+
+  } catch (error) {
+    console.error("Erreur d'inscription :", error);
+    toast.error(
+      error instanceof Error
+        ? error.message
+        : "Échec de l'inscription. Veuillez réessayer."
+    );
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+function handleOfflineRegister(event: React.MouseEvent<HTMLButtonElement>): void {
+  // ton code ici
+  console.log("Enregistrement hors ligne déclenché !");
+}
+
 
   return (
     <div className="w-full space-y-6">

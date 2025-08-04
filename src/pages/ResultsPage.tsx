@@ -547,9 +547,11 @@ interface MedicalExam {
 }
 
 interface PredictionResult {
+  riskLevel: ReactNode;
   risk: number;
   factors: string[];
   prediction?: number;
+  probabilities?: number[];
   riskFactors?: string[];
   recommendations?: {
     preventive: string[];
@@ -611,8 +613,8 @@ const ResultsPage: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar isAuthenticated={true} />
-      <main className="flex-grow px-4 py-8 sm:px-6 lg:px-8 bg-muted/30">
-        <div className="mx-auto max-w-5xl">
+      <main className="flex-grow py-8 sm:px-6 lg:px-8 bg-muted/30">
+        <div className="mx-auto max-w-6xl">
           <div className="mb-8">
             <h1 className="text-3xl font-bold">Résultats de l'analyse</h1>
             <p className="text-muted-foreground">
@@ -674,7 +676,7 @@ const ResultsPage: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <Card>
                   <CardContent className="p-6">
-                    <RiskChart riskScore={result.prediction} riskLevel={result.riskLevel} />
+                    <RiskChart riskScore={result.prediction} riskLevel={result.riskLevel} probabilities={result.probabilities ||[75.4, 22.9, 1.7]} />
                   </CardContent>
                 </Card>
                 

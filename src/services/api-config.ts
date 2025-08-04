@@ -2,6 +2,7 @@
 
 // URL de base de l'API
 export const API_BASE_URL = "https://api-appcardio-predict.onrender.com"; // À remplacer par l'URL réelle en production
+
 // export const API_BASE_URL = "http://127.0.0.1:5000"; // À remplacer par l'URL réelle en production
 
 // Endpoints de l'API
@@ -9,8 +10,10 @@ export const API_ENDPOINTS = {
   // Authentification
   REGISTER: `${API_BASE_URL}/register`,
   LOGIN: `${API_BASE_URL}/login`,
-  UPDATE_USER: (username: string) => `${API_BASE_URL}/users/${username}`,
-  
+  // UPDATE_USER: (username: string) => `${API_BASE_URL}/users/${username}`,
+  UPDATE_USER: `${API_BASE_URL}/profile`,
+  GET_PROFILE : `${API_BASE_URL}/profile`,
+
   // Prédictions
   PREDICT: `${API_BASE_URL}/predict`,
   HISTORY: `${API_BASE_URL}/history`,

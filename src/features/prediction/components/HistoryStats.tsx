@@ -317,6 +317,9 @@ import {
   Legend,
 } from "recharts";
 
+import StatisticsDashboard from "@/features/statistics/components/StatisticsDashboard_patient";
+
+
 const HistoryStats: React.FC = () => {
   const { dailyStats, riskDistribution, isLoading, error } = useHistoryStats();
 
@@ -382,14 +385,20 @@ const HistoryStats: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Carte Évolution du risque cardiaque */}
-      <Card className="w-full">
+      {/* <Card className="w-full">
         <CardHeader>
           <CardTitle>Évolution du risque cardiaque</CardTitle>
         </CardHeader>
         <CardContent className="">
           <EnhancedRiskChart riskScore={0.35} />
         </CardContent>
-      </Card>
+      </Card> */}
+
+        {/* statisque personnalise */}
+          <div className="grid mb-5">
+              <StatisticsDashboard />
+          </div>
+
 
       {/* Les deux diagrammes côte à côte */}
       <div className="grid gap-6 md:grid-cols-2">
